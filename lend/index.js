@@ -54,4 +54,5 @@ app.post('/getByCustomer', (req, res) => {
 })
 
 // Tell express to listen to communication on the specified port after the configuration is done.
-app.listen(PORT, () => console.log(`Lend Service listening on ${PORT}`));
+const port = process.env.PORT
+app.listen(port, () => console.log(`Lend Service listening on ${port}`));
