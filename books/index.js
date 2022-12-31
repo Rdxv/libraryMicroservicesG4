@@ -111,7 +111,7 @@ app.post('/api/books', (request, response) => {
     const bookData = request.body;
 	
 	try {
-		const newBook = db.updateBook(bookData);
+		const newBook = db.newBook(bookData);
 		return response.status(201).json({
 			status: 'success',
 			data: newBook,
