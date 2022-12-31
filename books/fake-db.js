@@ -43,24 +43,32 @@ const addBook = function(book) {
     // Here the id is added to the book object before it is pushed into the array.
     const newBook = { ...book,
         id: id
-    }
+    };
     books.push(newBook);
     return newBook;
 }
 
 
-const updateBook = function(book) {
+const updateBook = function(book, id) {
     // Finds the index where the condition function returns true
     const index = books.findIndex(element => element && element.id === id);
-    books[index] = book;
-    return books[index];
+	if (index !== -1) {
+		books[index] = { ...book,
+			id: id
+		};
+		return books[index];
+	}
+    return undefined;
 }
 
 
 const removeBook = function(id) {
     // Finds the index where the condition function returns true
     const index = books.findIndex(element => element && element.id === id);
-    return delete books[index];
+	if (index !== -1) {
+		return delete books[index];
+	}
+    return undefined;
 }
 
 
