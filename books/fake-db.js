@@ -37,23 +37,19 @@ books.push(
 
 
 const addBook = function(book) {
-    const id = uuid();
-    // The spread operator (...) is used to create a new object which contains all elements of the received lend object
-    // and adds new keys or changes keys of the object.
-    // Here the id is added to the book object before it is pushed into the array.
     const newBook = { ...book,
-        id: id
+        id: uuid()
     };
     books.push(newBook);
     return newBook;
 }
 
 
-const updateBook = function(book, id) {
+const updateBook = function(data, id) {
     // Finds the index where the condition function returns true
     const index = books.findIndex(element => element && element.id === id);
 	if (index !== -1) {
-		books[index] = { ...book,
+		books[index] = { ...data,
 			id: id
 		};
 		return books[index];
@@ -66,7 +62,8 @@ const removeBook = function(id) {
     // Finds the index where the condition function returns true
     const index = books.findIndex(element => element && element.id === id);
 	if (index !== -1) {
-		return delete books[index];
+		delete books[index];
+		return true;
 	}
     return undefined;
 }
@@ -77,7 +74,7 @@ const getBook = function(id) {
 }
 
 
-const getBooks = function(pageNumber = 0, pageSize = 10, filterFunction = item => true) {
+const getAllBooks = function(pageNumber = 0, pageSize = 10, filterFunction = item => true) {
 	pageBeginsAt = pageNumber * pageSize;
 	pageEndsAt = pageBeginsAt + pageSize;
 	
