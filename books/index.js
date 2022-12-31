@@ -111,7 +111,7 @@ app.post('/api/books', (request, response) => {
     const bookData = request.body;
 	
 	try {
-		const newBook = db.newBook(bookData);
+		const newBook = db.addBook(bookData);
 		return response.status(201).json({
 			status: 'success',
 			data: newBook,
