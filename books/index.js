@@ -63,8 +63,9 @@ app.delete('/api/books/:id', (request, response) => {
     try {
 		result = db.removeBook(request.params.id);
 		if (result) {
-			return response.status(204).json({
-				status: 'success'
+			return response.status(200).json({
+				status: 'success',
+				msg: 'Deleted'
 			});
 		} else {
 			return response.status(404).json({
