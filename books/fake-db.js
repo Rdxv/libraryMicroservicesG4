@@ -3,8 +3,11 @@ A collection of functions simulating a data storage.
 */
 
 // Import a library to create ids.
-let uuid = require('uuid/v1');
-let books = [];
+const { v4: uuid } = require('uuid');
+
+
+// Create empty fake db
+const books = [];
 
 
 // Create some mock data
