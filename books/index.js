@@ -6,11 +6,11 @@ dotenv.config();
 import express from 'express';
 
 // Import database connection
-import * as db from './fake-db.js';
+import * as db from './database/fake-db.js';
 
 // Create the Server Instance
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT ?? 3001;
 
 // Tell express to use its JSON middleware.
 // If the server recevies JSON in a request's body it will automatically convert the JSON to a JavaScript object.
