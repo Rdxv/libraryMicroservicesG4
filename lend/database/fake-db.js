@@ -31,7 +31,7 @@ const removeLend = id => {
     return lendToRemove;
 }
 
-const returnBook = (lendId, bookId) => {
+const returnLend = (lendId, bookId) => {
     let manipLend = lends.find(lend => lendId === lend.id);
     manipLend.books = manipLend.books.filter(book => {
         if (bookId === book.id) {
@@ -74,7 +74,7 @@ module.exports = {
     addLend,
     updateLend,
     removeLend,
-    returnBook,
+    returnLend,
     getAllLends,
     getLendById,
     getLendByBook,
