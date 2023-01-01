@@ -1,6 +1,9 @@
-// Import the Fake DB functions and the express Framework
-const db = require('./fake-db');
-const express = require('express');
+// Import express
+import express from 'express';
+
+// Import database connection
+import * as db from './fake-db.js';
+
 // Create the Server Instance
 const app = express();
 const PORT = process.env.PORT || 3001;

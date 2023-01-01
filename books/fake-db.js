@@ -3,7 +3,7 @@ A collection of functions simulating a data storage.
 */
 
 // Import a library to create ids.
-const { v4: uuid } = require('uuid');
+import { v4 as uuid } from 'uuid';
 
 
 // Create empty fake db
@@ -75,8 +75,8 @@ const getBook = function(id) {
 
 
 const getAllBooks = function(pageNumber = 0, pageSize = 10, filterFunction = item => true) {
-	pageBeginsAt = pageNumber * pageSize;
-	pageEndsAt = pageBeginsAt + pageSize;
+	const pageBeginsAt = pageNumber * pageSize;
+	const pageEndsAt = pageBeginsAt + pageSize;
 	
 	const results = books.filter(function(item) {
 		// If item exists and filterFunction returns true (always does by default)...
@@ -100,10 +100,10 @@ const getAllBooks = function(pageNumber = 0, pageSize = 10, filterFunction = ite
 
 // If this file is imported an instance of this file is created 
 // and the below specified functions are made available to the importing party.
-module.exports = {
+export {
     addBook,
     updateBook,
     removeBook,
     getBook,
 	getAllBooks
-}
+};
