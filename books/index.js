@@ -1,3 +1,7 @@
+// Import and load dotenv
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 // Import express
 import express from 'express';
 
