@@ -106,3 +106,9 @@ dist
 .idea/modules.xml
 .idea/libraryMicroservicesG4.iml
 img/Thumbs.db
+.idea/misc.xml
+
+#Java files
+target/*
+customers/target/*
+*.class
