@@ -5,13 +5,20 @@ import mongoose from 'mongoose';
 import { v1 as uuid_v1 } from 'uuid';
 
 
+const normalize = function (doc, ret, game) {
+	ret.id = doc.id; // Use doc(ument) default getter id (that always displays _id in string form) as id field in ret(urned plain object) 
+	delete ret._id; // Remove raw _id from returnd plain object
+	delete ret.__v; // Remove __v (versionKey) from returnd plain object
+}
+
+
 // Setup schema
 const BookSchema = new mongoose.Schema(
   {
 	_id: {
 	  type: mongoose.Schema.Types.UUID,
 	  default: uuid_v1,
-	  immutable: true
+	  immutable: true,
 	},
     title: {
       type: String,
@@ -65,9 +72,9 @@ const BookSchema = new mongoose.Schema(
     }
   },
   {
-	//versionKey: '_v1',
-    toJSON: {getters: true},
-    toObject: {getters: true}
+	//versionKey: false,
+    toJSON: {transform: normalize},
+    toObject: {transform: normalize}
   }
 );
 
