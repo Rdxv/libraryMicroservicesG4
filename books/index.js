@@ -6,11 +6,13 @@ dotenv.config();
 import express from 'express';
 
 // Import database connection
-import * as db from './database/fake-db.js';
+import * as db from './database/real-db.js';
+
+// Get PORT from env
+const PORT = process.env.PORT ?? 3001;
 
 // Create the Server Instance
 const app = express();
-const PORT = process.env.PORT ?? 3001;
 
 // Tell express to use its JSON middleware.
 // If the server recevies JSON in a request's body it will automatically convert the JSON to a JavaScript object.
@@ -22,9 +24,9 @@ app.get('/', (request, response) => {
 });
 
 
-app.get('/api/books/:id', (request, response) => {
+app.get('/api/books/:id', async (request, response) => {
     try {
-		const book = db.getBook(request.params.id);
+		const book = await db.getBook(request.params.id);
 		if (book) {
 			return response.status(200).json({
 				status: 'success',
@@ -45,13 +47,13 @@ app.get('/api/books/:id', (request, response) => {
 })
 
 
-app.get('/api/books', (request, response) => {
+app.get('/api/books', async (request, response) => {
 	const pageNumber = request.query.page ?? 0;
 	//const pageSize = request.query.pageSize;
 	const pageSize = 10;
 	
 	try {
-		const books = db.getAllBooks(pageNumber, pageSize);
+		const books = await db.getAllBooks(pageNumber, pageSize);
 		return response.status(200).json({
 			status: 'success',
 			page: pageNumber,
@@ -66,9 +68,9 @@ app.get('/api/books', (request, response) => {
 });
 
 
-app.delete('/api/books/:id', (request, response) => {
+app.delete('/api/books/:id', async (request, response) => {
     try {
-		const result = db.removeBook(request.params.id);
+		const result = await db.removeBook(request.params.id);
 		if (result) {
 			return response.status(200).json({
 				status: 'success',
@@ -89,12 +91,12 @@ app.delete('/api/books/:id', (request, response) => {
 });
 
 
-app.put('/api/books/:id', (request, response) => {
+app.put('/api/books/:id', async (request, response) => {
     const bookData = request.body;
 	const bookId = request.params.id;
 	
 	try {
-		const updatedBook = db.updateBook(bookData, bookId);
+		const updatedBook = await db.updateBook(bookData, bookId);
 		if (updatedBook) {
 			return response.status(200).json({
 				status: 'success',
@@ -115,11 +117,11 @@ app.put('/api/books/:id', (request, response) => {
 });
 
 
-app.post('/api/books', (request, response) => {
+app.post('/api/books', async (request, response) => {
     const bookData = request.body;
 	
 	try {
-		const newBook = db.addBook(bookData);
+		const newBook = await db.addBook(bookData);
 		return response.status(201).json({
 			status: 'success',
 			data: newBook,
@@ -137,13 +139,17 @@ app.post('/api/books', (request, response) => {
 // Default route for bad requests
 app.use(
   //'/',
-  function (request, reply) {
+  async function (request, reply) {
     reply.status(400).json({
       success: false,
       error: 'Bad request',
     });
   },
 );
+
+
+// Wait for db connection
+await db.dbConnection();
 
 
 // Tell express to listen to communication on the specified port after the configuration is done.

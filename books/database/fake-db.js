@@ -3,37 +3,41 @@ A collection of functions simulating a data storage.
 */
 
 // Import a library to create ids.
-import { v4 as uuid } from 'uuid';
+import { v1 as uuid } from 'uuid';
 
 
 // Create empty fake db
 const books = [];
 
 
-// Create some mock data
-books.push(
-	{
-		id: uuid(),
-		isbn: "978-3-548-26308-3",
-		title: "Es",
-		author: "Stephen King",
-		publisher: "Ullstein",
-		year: 2005,
-		genre: "Horror",
-		copies: 0
-	},
-	{
-		id: uuid(),
-		isbn: "978-3-548-26308-3",
-		title: "Schnelles Denken, langsames Denken",
-		author: "Daniel Kahneman",
-		publisher: "Penguin Verlag",
-		year: 2016,
-		genre: "Sachbuch",
-		copies: 2
-	}
-);
-
+// Pretend we're connecting to a db
+const dbConnection = async function() {
+	// Create some mock data
+	books.push(
+		{
+			id: uuid(),
+			isbn13: "978-3-548-26308-3",
+			title: "Es",
+			author: "Stephen King",
+			publisher: "Ullstein",
+			year: 2005,
+			genre: "Horror",
+			copies: 0
+		},
+		{
+			id: uuid(),
+			isbn13: "978-3-548-26308-3",
+			title: "Schnelles Denken, langsames Denken",
+			author: "Daniel Kahneman",
+			publisher: "Penguin Verlag",
+			year: 2016,
+			genre: "Sachbuch",
+			copies: 2
+		}
+	);
+	
+	// TODO add something to log
+}
 
 
 const addBook = function(book) {
@@ -62,8 +66,9 @@ const removeBook = function(id) {
     // Finds the index where the condition function returns true
     const index = books.findIndex(element => element && element.id === id);
 	if (index !== -1) {
+		const deletedBook = JSON.parse(JSON.stringify(books[index])); // Deep copy book before deleting it (very ugly but most portable solution to emulate real db)
 		delete books[index];
-		return true;
+		return deletedBook;
 	}
     return undefined;
 }
@@ -74,12 +79,12 @@ const getBook = function(id) {
 }
 
 
-const getAllBooks = function(pageNumber = 0, pageSize = 10, filterFunction = item => true) {
+const getBooksFiltered = function(pageNumber = 0, pageSize = 10, filterFunction) {
 	const pageBeginsAt = pageNumber * pageSize;
 	const pageEndsAt = pageBeginsAt + pageSize;
 	
 	const results = books.filter(function(item) {
-		// If item exists and filterFunction returns true (always does by default)...
+		// If item exists and filterFunction returns true...
 		if (item && filterFunction(item)) {
 			// If item is in the page requested...
 			if (this.counter >= pageBeginsAt && this.counter < pageEndsAt) {
@@ -97,10 +102,17 @@ const getAllBooks = function(pageNumber = 0, pageSize = 10, filterFunction = ite
 }
 
 
+const getAllBooks = function(pageNumber = 0, pageSize = 10) {
+	const getAllFilterFunction = item => true; // Get all results
+	return getBooksFiltered(pageNumber, pageSize, getAllFilterFunction);
+}
+
+
 
 // If this file is imported an instance of this file is created 
 // and the below specified functions are made available to the importing party.
 export {
+	dbConnection,
     addBook,
     updateBook,
     removeBook,
