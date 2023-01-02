@@ -108,7 +108,7 @@ dist
 img/Thumbs.db
 .idea/misc.xml
 
-#Java files
+# Java files
 target/*
 customers/target/*
 *.class
