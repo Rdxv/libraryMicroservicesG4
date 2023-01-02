@@ -64,7 +64,11 @@ const BookSchema = new mongoose.Schema(
       default: 0
     }
   },
-//  { versionKey: '_v1' }
+  {
+	//versionKey: '_v1',
+    toJSON: {getters: true},
+    toObject: {getters: true}
+  }
 );
 
 
