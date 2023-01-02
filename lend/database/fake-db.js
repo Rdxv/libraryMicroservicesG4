@@ -6,6 +6,26 @@ A collection of functions simulating a data storage.
 let uuid = require('uuid/v1');
 let lends = [];
 
+const dbConnection = async function() {
+    // Create some mock data
+    lends.push(
+        {
+            id: uuid(),
+            bookId: uuid(),
+            customerId: uuid(),
+            createdAt: "2022-01-01",
+            returnedAt: "",
+        },
+        {
+            id: uuid(),
+            bookId: uuid(),
+            customerId: uuid(),
+            createdAt: "2022-01-01",
+            returnedAt: "2022-02-15",
+        }
+    )
+}
+
 const addLend = lend => {
     const id = uuid();
     // The spread operator (...) is used to create a new object which contains all elements of the received lend object
