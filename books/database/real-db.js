@@ -59,11 +59,17 @@ const getBook = async function(id) {
 }
 
 
-const getAllBooks = async function(pageNumber = 0, pageSize = 10) {
-	// TODO pagination
-	const books = await Book.find({}).exec() // Get all books
+const getAllBooks = async function(pageNumber = 1, pageSize = 10) {
+	const results = await Book.paginate({}, { page: pageNumber, limit: pageSize }); // Functions from pagination plugin already return a promise and don't need .exec()
 	
-    return books;
+	const output = {
+		data: results.docs,
+		pageNumber: results.page,
+		pageSize: results.limit,
+		totalPages: results.totalPages
+	};
+	
+    return output;
 }
 
 

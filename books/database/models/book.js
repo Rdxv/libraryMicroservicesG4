@@ -1,6 +1,9 @@
 // Import mongoose
 import mongoose from 'mongoose';
 
+// Import mongoose pagination plugin
+import paginate from 'mongoose-paginate-v2';
+
 // Import uuid (v1)
 import { v1 as uuid_v1 } from 'uuid';
 
@@ -82,6 +85,10 @@ const BookSchema = new mongoose.Schema(
 // Set indexes and unique constrains
 BookSchema.index({ isbn13: 1 }, { unique: true, sparse: true }); // If provided must be unique (because old books don't have an ISBN)
 BookSchema.index({ title: 1, year: 1 }, { unique: true }); // No books with same title and year
+
+
+// Add pagination plugin
+BookSchema.plugin(paginate);
 
 
 // Create book model based on book schema

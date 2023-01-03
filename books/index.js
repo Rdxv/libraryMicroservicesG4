@@ -48,16 +48,14 @@ app.get('/api/books/:id', async (request, response) => {
 
 
 app.get('/api/books', async (request, response) => {
-	const pageNumber = request.query.page ?? 0;
-	//const pageSize = request.query.pageSize;
-	const pageSize = 10;
+	const pageNumber = request.query.pageNumber ?? 0;
+	const pageSize = request.query.pageSize ?? 10;
 	
 	try {
-		const books = await db.getAllBooks(pageNumber, pageSize);
+		const results = await db.getAllBooks(pageNumber, pageSize);
 		return response.status(200).json({
 			status: 'success',
-			page: pageNumber,
-			data: books
+			...results
 		});
 	} catch (err) {
 		return response.status(500).json({

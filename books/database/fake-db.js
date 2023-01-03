@@ -79,8 +79,8 @@ const getBook = function(id) {
 }
 
 
-const getBooksFiltered = function(pageNumber = 0, pageSize = 10, filterFunction) {
-	const pageBeginsAt = pageNumber * pageSize;
+const getBooksFiltered = function(pageNumber = 1, pageSize = 10, filterFunction) {
+	const pageBeginsAt = (pageNumber - 1) * pageSize;
 	const pageEndsAt = pageBeginsAt + pageSize;
 	
 	const results = books.filter(function(item) {
@@ -98,11 +98,17 @@ const getBooksFiltered = function(pageNumber = 0, pageSize = 10, filterFunction)
 		return false;
 	}, {counter: 0});
 	
-    return results;
+	const output = {
+		data: results,
+		pageNumber: pageNumber,
+		pageSize: pageSize
+	};
+	
+    return output;
 }
 
 
-const getAllBooks = function(pageNumber = 0, pageSize = 10) {
+const getAllBooks = function(pageNumber = 1, pageSize = 10) {
 	const getAllFilterFunction = item => true; // Get all results
 	return getBooksFiltered(pageNumber, pageSize, getAllFilterFunction);
 }
