@@ -59,8 +59,8 @@ const getBook = async function(id) {
 }
 
 
-const getAllBooks = async function(pageNumber = 1, pageSize = 10) {
-	const results = await Book.paginate({}, { page: pageNumber, limit: pageSize }); // Functions from pagination plugin already return a promise and don't need .exec()
+const getBooksWithQuery = async function(mongooseQuery, pageNumber = 1, pageSize = 10) {
+	const results = await Book.paginate(mongooseQuery, { page: pageNumber, limit: pageSize }); // Functions from pagination plugin already return a promise and don't need .exec()
 	
 	const output = {
 		data: results.docs,
@@ -73,6 +73,47 @@ const getAllBooks = async function(pageNumber = 1, pageSize = 10) {
 }
 
 
+const getAllBooks = async function(pageNumber = 1, pageSize = 10) {
+	const results = await getMultipleBooks({}, pageNumber, pageSize); // Empty query = All books
+	return results;
+}
+
+
+const getBooksByFilter = async function(filter, pageNumber = 1, pageSize = 10) {
+	
+	// Filter example:
+	// {
+	//     title: "EaRtH",
+	//     author: "Jules"
+	// }
+	// Result "Journey to the Center of the Earth" by "Jules Verne"
+	
+	const mongooseQuery = {}; // Create empty query (without other options it returns all records in db)
+	
+	const { year: yearField, isbn: isbnField, ...otherFields } = filter;
+	
+	if (yearField) {
+		mongooseQuery.$and ??= [];
+		mongooseQuery.$and.push({ year: yearField });
+	}
+	
+	for (const field in otherFields) {
+		const wordsInSearchString = filter[field].split(/\s+/); // Split search string in words
+		
+		const regexes = wordsInSearchString.map(word => RegExp(word, 'i'));
+		
+		const mongooseSubquery = { [field]: { $in: regexes } }; // Create subquery to look for words in field
+		
+		mongooseQuery.$and ??= []; // Add empty $and array to mongoose query if undefined
+		mongooseQuery.$and.push(mongooseSubquery); // Add subquery to $and array (see MongoDB/Mongoose queries documentation)
+	}
+	
+	const results = await getBooksWithQuery(mongooseQuery, pageNumber, pageSize);
+	
+	return results;
+}
+
+
 // If this file is imported an instance of this file is created 
 // and the below specified functions are made available to the importing party.
 export {
@@ -81,5 +122,6 @@ export {
     updateBook,
     removeBook,
     getBook,
-	getAllBooks
+	getAllBooks,
+	getBooksByFilter
 };

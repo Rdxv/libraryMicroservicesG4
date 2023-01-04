@@ -24,6 +24,38 @@ app.get('/', (request, response) => {
 });
 
 
+app.get('/api/books', async (request, response) => {
+	const pageNumber = request.query.pageNumber ?? 0;
+	const pageSize = request.query.pageSize ?? 10;
+	
+	const filter = {};
+	
+	if (request.query.title)
+		filter.title = request.query.title;
+	if (request.query.author)
+		filter.author = request.query.author;
+	if (request.query.publisher)
+		filter.publisher = request.query.publisher;
+	if (request.query.genre)
+		filter.genre = request.query.genre;
+	if (request.query.year)
+		filter.year = request.query.year;
+	
+	try {
+		const results = await db.getBooksByFilter(filter, pageNumber, pageSize);
+		return response.status(200).json({
+			status: 'success',
+			...results
+		});
+	} catch (err) {
+		return response.status(500).json({
+			status: 'fail',
+			error: err.toString(),
+		});
+	}
+});
+
+
 app.get('/api/books/:id', async (request, response) => {
     try {
 		const book = await db.getBook(request.params.id);
@@ -45,25 +77,6 @@ app.get('/api/books/:id', async (request, response) => {
 		});
 	}
 })
-
-
-app.get('/api/books', async (request, response) => {
-	const pageNumber = request.query.pageNumber ?? 0;
-	const pageSize = request.query.pageSize ?? 10;
-	
-	try {
-		const results = await db.getAllBooks(pageNumber, pageSize);
-		return response.status(200).json({
-			status: 'success',
-			...results
-		});
-	} catch (err) {
-		return response.status(500).json({
-			status: 'fail',
-			error: err.toString(),
-		});
-	}
-});
 
 
 app.delete('/api/books/:id', async (request, response) => {
