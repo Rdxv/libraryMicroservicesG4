@@ -6,7 +6,7 @@ dotenv.config();
 import express from 'express';
 
 // Import database connection
-import * as db from './database/real-db.js';
+import * as db from './database/db.js';
 
 // Get PORT from env
 const PORT = process.env.PORT ?? 3001;

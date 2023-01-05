@@ -13,5 +13,8 @@
     "mongoose": "^6.8.2",
     "mongoose-paginate-v2": "^1.7.1",
     "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "mongodb-memory-server": "^8.10.2"
   }
 }
