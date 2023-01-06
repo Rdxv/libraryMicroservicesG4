@@ -5,26 +5,49 @@ dotenv.config();
 // Import express
 import express from 'express';
 
+// Import logger
+import logger from './logger/logger.js';
+
 // Import database connection
 import * as db from './database/db.js';
 
-// Get PORT from env
+
+// Parse ENV
 const PORT = process.env.PORT ?? 3001;
 
-// Create the Server Instance
+
+// Create wrapper function to atch exceptions in async routes and pass them to Express error handling chain (Express by default doesn't catch errors in asyncs)
+const asyncRouteWrapper = function (callback) {
+	return function (req, res, next) {
+		callback(req, res, next).catch(next);
+	}
+}
+
+
+// Create the server instance
 const app = express();
 
-// Tell express to use its JSON middleware.
-// If the server recevies JSON in a request's body it will automatically convert the JSON to a JavaScript object.
-app.use(express.json());
+
+// Parses JSON in request body and handles parsing errors
+app.use(
+	express.json(),
+	function (err, request, response, next) {
+		if (err instanceof SyntaxError && err.status === 400) {
+			response.status(400).json({
+				success: false,
+				msg: 'Bad JSON'
+			});
+		}
+	},
+);
 
 
-app.get('/', (request, response) => {
-    response.send('Libreria Alfonso aperta');
-});
+// app.get('/', (request, response) => {
+//     response.send('Libreria Alfonso aperta');
+// });
 
 
-app.get('/api/books', async (request, response) => {
+app.get('/api/books', asyncRouteWrapper( async (request, response) => {
 	const pageNumber = request.query.pageNumber ?? 0;
 	const pageSize = request.query.pageSize ?? 10;
 	
@@ -41,127 +64,126 @@ app.get('/api/books', async (request, response) => {
 	if (request.query.year)
 		filter.year = request.query.year;
 	
-	try {
-		const results = await db.getBooksByFilter(filter, pageNumber, pageSize);
+	const results = await db.getBooksByFilter(filter, pageNumber, pageSize);
+	
+	return response.status(200).json({
+		success: true,
+		...results
+	});
+}));
+
+
+app.get('/api/books/:id', asyncRouteWrapper( async (request, response) => {
+	const book = await db.getBook(request.params.id);
+	
+	if (book) {
+		
 		return response.status(200).json({
-			status: 'success',
-			...results
+			success: true,
+			data: book,
 		});
-	} catch (err) {
-		return response.status(500).json({
-			status: 'fail',
-			error: err.toString(),
+		
+	} else {
+		
+		return response.status(404).json({
+			success: false,
+			msg: 'Not found'
 		});
+		
 	}
-});
+}));
 
 
-app.get('/api/books/:id', async (request, response) => {
-    try {
-		const book = await db.getBook(request.params.id);
-		if (book) {
-			return response.status(200).json({
-				status: 'success',
-				data: book,
-			});
-		} else {
-			return response.status(404).json({
-				status: 'fail',
-				error: 'Not found',
-			});
-		}
-	} catch (err) {
-		return response.status(500).json({
-			status: 'fail',
-			error: err.toString(),
+app.delete('/api/books/:id', asyncRouteWrapper( async (request, response) => {
+	const result = await db.removeBook(request.params.id);
+	
+	if (result) {
+		
+		return response.status(200).json({
+			success: true,
+			msg: 'Deleted'
 		});
-	}
-})
-
-
-app.delete('/api/books/:id', async (request, response) => {
-    try {
-		const result = await db.removeBook(request.params.id);
-		if (result) {
-			return response.status(200).json({
-				status: 'success',
-				msg: 'Deleted'
-			});
-		} else {
-			return response.status(404).json({
-				status: 'fail',
-				error: 'Not found',
-			});
-		}
-	} catch (err) {
-		return response.status(500).json({
-			status: 'fail',
-			error: err.toString(),
+		
+	} else {
+		
+		return response.status(404).json({
+			success: false,
+			msg: 'Not found'
 		});
+		
 	}
-});
+}));
 
 
-app.put('/api/books/:id', async (request, response) => {
+app.put('/api/books/:id', asyncRouteWrapper( async (request, response) => {
     const bookData = request.body;
 	const bookId = request.params.id;
 	
-	try {
-		const updatedBook = await db.updateBook(bookData, bookId);
-		if (updatedBook) {
-			return response.status(200).json({
-				status: 'success',
-				data: updatedBook,
-			});
-		} else {
-			return response.status(404).json({
-				status: 'fail',
-				error: 'Not found',
-			});
-		}
-	} catch (err) {
-		return response.status(500).json({
-			status: 'fail',
-			error: err.toString(),
+	const updatedBook = await db.updateBook(bookData, bookId);
+	
+	if (updatedBook) {
+		
+		return response.status(200).json({
+			success: true,
+			data: updatedBook,
 		});
+		
+	} else {
+		
+		return response.status(404).json({
+			success: false,
+			msg: 'Not found',
+		});
+		
 	}
-});
+}));
 
 
-app.post('/api/books', async (request, response) => {
+app.post('/api/books', asyncRouteWrapper( async (request, response) => {
     const bookData = request.body;
 	
-	try {
-		const newBook = await db.addBook(bookData);
-		return response.status(201).json({
-			status: 'success',
-			data: newBook,
-		});
-	} catch (err) {
-		return response.status(500).json({
-			status: 'fail',
-			error: err.toString(),
+	const newBook = await db.addBook(bookData);
+	
+	return response.status(201).json({
+		success: true,
+		data: newBook
+	});
+}));
+
+
+
+// Default route for unimplemented paths
+app.use(
+	//'/',
+	async (request, response) => {
+		response.status(400).json({
+			success: false,
+			msg: 'Bad request'
 		});
 	}
-});
-
-
-
-// Default route for bad requests
-app.use(
-  //'/',
-  async function (request, reply) {
-    reply.status(400).json({
-      success: false,
-      error: 'Bad request',
-    });
-  },
 );
 
 
+// Route error handler
+app.use( (error, req, res, next) => {
+	
+	// Log error
+	logger.error(error);
+	
+	// Return message to user
+	return res.status(500).json({
+		success: false,
+		msg: 'Internal server error'
+	});
+});
+
+
 // Wait for db connection
-await db.dbConnection();
+await db.dbConnection(
+	error => logger.error(`DB Error: ${error}`),
+	info => logger.info(`DB Info: ${info}`)
+);
 
 
-// Tell express to listen to communication on the specified port after the configuration is done.
-app.listen(PORT, () => console.log(`Libreria Alfonso sulla porta ${PORT}`));
+// Tell express to listen to communication on the specified port after the configuration is done
+app.listen(PORT, () => logger.info(`Libreria Alfonso listening on port ${PORT}`));

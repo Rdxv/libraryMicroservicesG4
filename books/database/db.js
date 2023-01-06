@@ -18,8 +18,8 @@ import Book from './models/book.js';
 
 
 // Connect to mongodb
-const dbConnection = async function() {
-	await mongoConnection(); // TODO change logging inside mongoConnection
+const dbConnection = async function(errorLogger, infoLogger) {
+	await mongoConnection(errorLogger, infoLogger); // TODO change logging inside mongoConnection
 }
 
 

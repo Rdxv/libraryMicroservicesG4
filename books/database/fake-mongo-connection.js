@@ -4,15 +4,15 @@ import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 
-async function mongoConnection() {
+async function mongoConnection(errorLogger, infoLogger) {
 	// const username = encodeURIComponent(process.env.MONGO_USER);
 	// const password = encodeURIComponent(process.env.MONGO_PASSWORD);
 	// const mongoCluster = process.env.MONGO_CLUSTER;
 	// const mongoDatabase = process.env.MONGO_DB;
 	
 	const dbConnection = mongoose.connection;
-	dbConnection.on('error', (err) => console.error(`Connection error ${err}`));
-	dbConnection.once('open', () => console.log('Connected to DB!'));
+	dbConnection.on('error', (err) => errorLogger(err));
+	dbConnection.once('open', () => infoLogger('Connected to DB!'));
 	
 	const mongoServer = await MongoMemoryServer.create(); // Spin up in-memory mongodb
 
@@ -22,7 +22,7 @@ async function mongoConnection() {
 			{ dbName: "microservices" } // Set db name
 		);
 	} catch (err) {
-		console.error(`Error connecting to the database. \n ${err}`);
+		errorLogger(err);
 	}
 }
 
