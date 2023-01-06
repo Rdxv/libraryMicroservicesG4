@@ -1,4 +1,10 @@
+// Import mongoose
 import mongoose from 'mongoose';
+
+
+// To suppress dumb mongoose deprecation warning (it's dumb because we are not using anything deprecated)
+mongoose.set('strictQuery', false);
+
 
 async function mongoConnection(errorLogger, infoLogger) {
 	const username = encodeURIComponent(process.env.MONGO_USER);
@@ -24,5 +30,6 @@ async function mongoConnection(errorLogger, infoLogger) {
 		errorLogger(err);
 	}
 }
+
 
 export default mongoConnection;

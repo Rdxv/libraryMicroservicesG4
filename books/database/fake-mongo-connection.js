@@ -4,6 +4,10 @@ import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 
+// To suppress dumb mongoose deprecation warning (it's dumb because we are not using anything deprecated)
+mongoose.set('strictQuery', false);
+
+
 async function mongoConnection(errorLogger, infoLogger) {
 	// const username = encodeURIComponent(process.env.MONGO_USER);
 	// const password = encodeURIComponent(process.env.MONGO_PASSWORD);
