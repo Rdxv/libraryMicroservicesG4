@@ -160,9 +160,9 @@ app.post('/api/books', asyncRouteWrapper( async (request, response) => {
 app.use(
 	//'/',
 	async (request, response) => {
-		response.status(400).json({
+		response.status(501).json({
 			success: false,
-			msg: 'Bad request'
+			msg: 'Unimplemented route'
 		});
 	}
 );
