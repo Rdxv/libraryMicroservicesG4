@@ -1,15 +1,11 @@
 import knex from 'knex'
 
-const sqlConnection = async function(logger) {
+const fakeSqlConnection = async function(logger) {
     try {
         await knex({
-            client: 'mysql',
+            client: 'better-sqlite3',
             connection: {
-                port: process.env.SQL_PORT ?? 3306,
-                host: process.env.SQL_HOST ?? 'localhost',
-                user: process.env.SQL_USER,
-                password: process.env.SQL_PASSWORD,
-                database: process.env.SQL_DBNAME
+                filename: ":memory:"
             },
             log: {
                 warn(message) {
@@ -35,4 +31,4 @@ const sqlConnection = async function(logger) {
 
 }
 // Exports
-export default sqlConnection;
+export default fakeSqlConnection;
