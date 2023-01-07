@@ -9,8 +9,7 @@ import express from 'express';
 import { logger, loggingMiddleware } from './logger/logger.js';
 
 // Import database connection
-// TODO in the next row, change the import file with SQL
-//import * as db from './database/db.js';
+import * as db from './database/db.js';
 
 
 // Parse ENV
@@ -208,6 +207,9 @@ app.post('/api/lends/return', (req, res) => {
     res.json(db.returnLend(req.body.lendId, req.body.bookId));
 })
 */
+
+// Wait for db connection
+await db.dbConnection(logger);
 
 // Tell express to listen to communication on the specified port after the configuration is done.
 app.listen(PORT, () => console.log(`Lend Service listening on ${PORT}`));
