@@ -6,7 +6,7 @@ dotenv.config();
 import express from 'express';
 
 // Import logger
-import logger from './logger/logger.js';
+import { logger, loggingMiddleware } from './logger/logger.js';
 
 // Import database connection
 import * as db from './database/db.js';
@@ -26,6 +26,10 @@ const asyncRouteWrapper = function (callback) {
 
 // Create the server instance
 const app = express();
+
+
+// Add logging middleware
+app.use(loggingMiddleware);
 
 
 // Parses JSON in request body and handles parsing errors
