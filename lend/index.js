@@ -46,33 +46,107 @@ app.use(
 );
 
 
-app.get('/', (request, response) => {
+/* app.get('/', (request, response) => {
     response.send('Libreria Alfonso, servizio prestiti');
-});
+}); */
 
-app.get('/api/lends/:lendId', (request, response) => {
-    try {
-        const lend = db.getLendById(request.params.id);
-        if (lend) {
-            return response.status(200).json({
-                status: 'success',
-                data: lend,
-            });
-        } else {
-            return response.status(404).json({
-                status: 'fail',
-                error: 'Not found',
-            });
-        }
-    } catch (err) {
-        return response.status(500).json({
-            status: 'fail',
-            error: err.toString(),
-        });
-    }
-})
 
-/*app.get('/api/lends/:customerId', (request, response) => {
+app.get('/api/lends', asyncRouteWrapper( async (request, response) => {
+	const pageNumber = request.query.pageNumber ?? 0;
+	const pageSize = request.query.pageSize ?? 10;
+	
+	const filter = {};
+	
+	// TODO add filters
+	
+	const results = await db.getLendsByFilter(filter, pageNumber, pageSize);
+	
+	return response.status(200).json({
+		success: true,
+		...results
+	});
+}));
+
+
+app.get('/api/lends/:id', asyncRouteWrapper( async (request, response) => {
+	const result = await db.getLend(request.params.id);
+	
+	if (result) {
+		
+		return response.status(200).json({
+			success: true,
+			data: result
+		});
+		
+	} else {
+		
+		return response.status(404).json({
+			success: false,
+			msg: 'Not found'
+		});
+		
+	}
+}));
+
+
+app.delete('/api/lends/:id', asyncRouteWrapper( async (request, response) => {
+	const result = await db.removeLend(request.params.id);
+	
+	if (result) {
+		
+		return response.status(200).json({
+			success: true,
+			msg: 'Deleted'
+		});
+		
+	} else {
+		
+		return response.status(404).json({
+			success: false,
+			msg: 'Not found'
+		});
+		
+	}
+}));
+
+
+app.put('/api/lends/:id', asyncRouteWrapper( async (request, response) => {
+    const lendData = request.body;
+	const lendId = request.params.id;
+	
+	const updatedLend = await db.updateLend(lendData, lendId);
+	
+	if (updatedLend) {
+		
+		return response.status(200).json({
+			success: true,
+			data: updatedLend,
+		});
+		
+	} else {
+		
+		return response.status(404).json({
+			success: false,
+			msg: 'Not found',
+		});
+		
+	}
+}));
+
+
+app.post('/api/lends', asyncRouteWrapper( async (request, response) => {
+    const lendData = request.body;
+	
+	const newLend = await db.addLend(lendData);
+	
+	return response.status(201).json({
+		success: true,
+		data: newLend
+	});
+}));
+
+
+/*app.get('/api/lends/:customerId', asyncRouteWrapper( async (request, response) => {
     try {
         const lend = db.getLendByCustomer(request.params.id);
         if (lend) {
@@ -92,11 +166,12 @@ app.get('/api/lends/:lendId', (request, response) => {
             error: err.toString(),
         });
     }
-})*/
+}))*/
 
-/*app.get('/api/lends/:bookId', (request, response) => {
+
+/*app.get('/api/lends/:lendId', asyncRouteWrapper( async (request, response) => {
     try {
-        const lend = db.getLendByBook(request.params.id);
+        const lend = db.getLendByLend(request.params.id);
         if (lend) {
             return response.status(200).json({
                 status: 'success',
@@ -114,102 +189,46 @@ app.get('/api/lends/:lendId', (request, response) => {
             error: err.toString(),
         });
     }
-})*/
-
-app.get('/api/lends', (request, response) => {
-    const pageNumber = request.query.page ?? 0;
-    //const pageSize = request.query.pageSize;
-    const pageSize = 10;
-
-    try {
-        const lends = db.getAllLends(pageNumber, pageSize);
-        return response.status(200).json({
-            status: 'success',
-            page: pageNumber,
-            data: lends
-        });
-    } catch (err) {
-        return response.status(500).json({
-            status: 'fail',
-            error: err.toString(),
-        });
-    }
-});
-
-app.delete('/api/lends/:lendId', (request, response) => {
-    try {
-        const result = db.removeLend(request.params.id);
-        if (result) {
-            return response.status(200).json({
-                status: 'success',
-                msg: 'Deleted'
-            });
-        } else {
-            return response.status(404).json({
-                status: 'fail',
-                error: 'Not found',
-            });
-        }
-    } catch (err) {
-        return response.status(500).json({
-            status: 'fail',
-            error: err.toString(),
-        });
-    }
-});
-
-app.put('/api/lends/:lendId', (request, response) => {
-    const lendData = request.body;
-    const lendId = request.params.id;
-
-    try {
-        const updatedLend = db.updateLend(lendData, lendId);
-        if (updatedLend) {
-            return response.status(200).json({
-                status: 'success',
-                data: updatedLend,
-            });
-        } else {
-            return response.status(404).json({
-                status: 'fail',
-                error: 'Not found',
-            });
-        }
-    } catch (err) {
-        return response.status(500).json({
-            status: 'fail',
-            error: err.toString(),
-        });
-    }
-});
-
-app.post('/api/lends', (request, response) => {
-    const lendData = request.body;
-
-    try {
-        const newLend = db.addLend(lendData);
-        return response.status(201).json({
-            status: 'success',
-            data: newLend,
-        });
-    } catch (err) {
-        return response.status(500).json({
-            status: 'fail',
-            error: err.toString(),
-        });
-    }
-});
+}))*/
 
 
 /* TODO: change this method
 
 app.post('/api/lends/return', (req, res) => {
-    res.json(db.returnLend(req.body.lendId, req.body.bookId));
+    res.json(db.returnLend(req.body.lendId, req.body.lendId));
 })
 */
 
+
+// Default route for unimplemented paths
+app.use(
+	//'/',
+	async (request, response) => {
+		response.status(501).json({
+			success: false,
+			msg: 'Unimplemented route'
+		});
+	}
+);
+
+
+// Route error handler
+app.use( async (error, req, res, next) => {
+	
+	// Log error
+	logger.error(error);
+	
+	// Return message to user
+	return res.status(500).json({
+		success: false,
+		msg: 'Internal server error'
+	});
+});
+
+
 // Wait for db connection
 await db.dbConnection(logger);
+
 
 // Tell express to listen to communication on the specified port after the configuration is done.
 app.listen(PORT, () => console.log(`Lend Service listening on ${PORT}`));
