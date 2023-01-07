@@ -2,17 +2,49 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-// Import the Fake DB functions and the express Framework
-import * as db from './database/fake-db.js';
+// Import express
 import express from 'express';
 
-// Create the Server Instance
-const app = express();
+// Import logger
+import { logger, loggingMiddleware } from './logger/logger.js';
+
+// Import database connection
+// TODO in the next row, change the import file with SQL
+//import * as db from './database/db.js';
+
+
+// Parse ENV
 const PORT = process.env.PORT ?? 3002;
 
-// Tell express to use its JSON middleware.
-// If the server receives JSON in a request's body it will automatically convert the JSON to a JavaScript object.
-app.use(express.json());
+// Create wrapper function to catch exceptions in async routes and pass them to Express
+// error handling chain (Express by default doesn't catch errors in asyncs)
+const asyncRouteWrapper = function (callback) {
+    return function (req, res, next) {
+        callback(req, res, next).catch(next);
+    }
+}
+
+
+// Create the server instance
+const app = express();
+
+
+// Add logging middleware
+app.use(loggingMiddleware);
+
+
+// Parses JSON in request body and handles parsing errors
+app.use(
+    express.json(),
+    function (err, request, response, next) {
+        if (err instanceof SyntaxError && err.status === 400) {
+            response.status(400).json({
+                success: false,
+                msg: 'Bad JSON'
+            });
+        }
+    },
+);
 
 
 app.get('/', (request, response) => {
@@ -41,7 +73,7 @@ app.get('/api/lends/:lendId', (request, response) => {
     }
 })
 
-app.get('/api/lends/:customerId', (request, response) => {
+/*app.get('/api/lends/:customerId', (request, response) => {
     try {
         const lend = db.getLendByCustomer(request.params.id);
         if (lend) {
@@ -61,9 +93,9 @@ app.get('/api/lends/:customerId', (request, response) => {
             error: err.toString(),
         });
     }
-})
+})*/
 
-app.get('/api/lends/:bookId', (request, response) => {
+/*app.get('/api/lends/:bookId', (request, response) => {
     try {
         const lend = db.getLendByBook(request.params.id);
         if (lend) {
@@ -83,7 +115,7 @@ app.get('/api/lends/:bookId', (request, response) => {
             error: err.toString(),
         });
     }
-})
+})*/
 
 app.get('/api/lends', (request, response) => {
     const pageNumber = request.query.page ?? 0;
