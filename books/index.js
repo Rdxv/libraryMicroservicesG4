@@ -67,6 +67,8 @@ app.get('/api/books', asyncRouteWrapper( async (request, response) => {
 		filter.genre = request.query.genre;
 	if (request.query.year)
 		filter.year = request.query.year;
+	if (request.query.available !== undefined)
+		filter.available = request.query.available === 'true';
 	
 	const results = await db.getBooksByFilter(filter, pageNumber, pageSize);
 	

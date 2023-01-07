@@ -99,23 +99,31 @@ const getBooksByFilter = async function(filter, pageNumber = 1, pageSize = 10) {
 	// }
 	// Result "Journey to the Center of the Earth" by "Jules Verne"
 	
-	const mongooseQuery = {}; // Create empty query (without other options it returns all records in db)
+	const mongooseQuery = { $and: [{}] }; // Create empty query (without other options it returns all records in db)
 	
-	const { year: yearField, isbn: isbnField, ...otherFields } = filter;
+	const { year: yearFilter, isbn: isbnFilter, available: availableFilter, ...otherFilters } = filter;
 	
-	if (yearField) {
-		mongooseQuery.$and ??= [];
-		mongooseQuery.$and.push({ year: yearField });
+	if (yearFilter) {
+		//mongooseQuery.$and ??= [];
+		mongooseQuery.$and.push({ year: yearFilter });
 	}
 	
-	for (const field in otherFields) {
-		const wordsInSearchString = filter[field].split(/\s+/); // Split search string in words
+	if (availableFilter !== undefined) { // availableFilter is bool so we need to specifically check if it's defined
+		//mongooseQuery.$and ??= [];
+		if (availableFilter)
+			mongooseQuery.$and.push({ copies: { $gt: 0 } }); // If we have (at the moment) more than zero copies, then it's available
+		else
+			mongooseQuery.$and.push({ copies: 0 }); // Looking for unavailable books doesn't seem very useful, but maybe it's so...
+	}
+	
+	for (const property in otherFilters) {
+		const wordsInSearchString = otherFilters[property].replace(/[^\w\s]/gu, '').split(/\s+/u); // Split search string in words
 		
-		const regexes = wordsInSearchString.map(word => RegExp(word, 'i'));
+		const regex = wordsInSearchString.map(word => '(?=.*' + word + ')').join(''); // Create a regex that matches strings containing all the words provided in any order
 		
-		const mongooseSubquery = { [field]: { $in: regexes } }; // Create subquery to look for words in field
+		const mongooseSubquery = { [property]: { $regex: regex, $options: 'i' } }; // Create subquery to look for recors that match the regex (case insensitive)
 		
-		mongooseQuery.$and ??= []; // Add empty $and array to mongoose query if undefined
+		//mongooseQuery.$and ??= []; // Add empty $and array to mongoose query if undefined
 		mongooseQuery.$and.push(mongooseSubquery); // Add subquery to $and array (see MongoDB/Mongoose queries documentation)
 	}
 	

@@ -84,7 +84,8 @@ const BookSchema = new mongoose.Schema(
 
 // Set indexes and unique constrains
 BookSchema.index({ isbn13: 1 }, { unique: true, sparse: true }); // If provided must be unique (because old books don't have an ISBN)
-BookSchema.index({ title: 1, year: 1 }, { unique: true }); // No books with same title and year
+BookSchema.index({ title: 1, year: 1, publisher: 1, }, { unique: true }); // No books with same title, year and publisher
+BookSchema.index({ title: 'text', publisher: 'text', author: 'text' });
 
 
 // Add pagination plugin
