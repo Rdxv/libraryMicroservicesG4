@@ -33,7 +33,7 @@ const loggingMiddleware = pinoHttp({
     customLogLevel: function (req, res, err) {
         if (res.statusCode !== 404 && res.statusCode >= 400 && res.statusCode < 500) { // a 404 is just normal behaviour and doesn't need a warning
             return 'warn'
-        } else if (res.statusCode >= 500 || err) {
+        } else if (res.statusCode >= 500 || err) { // TODO 501 (used for unimplemented routes) should probably be a warning, not an error
             return 'error'
         }
         return 'info' // Default level = info
