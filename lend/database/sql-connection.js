@@ -30,6 +30,9 @@ const sqlConnection = async function(logger) {
 	// Other configs
 	const commonConfig = {
 		
+		// Define configs
+		define: { timestamps: false }, // Don't add timestamps columns to all tables
+		
 		// Debug logging function (set to false to disable debug logging)
 		logging: process.env.LOG_LEVEL === 'debug' ? msg => logger.debug(msg) : false,
 		
@@ -60,21 +63,7 @@ const sqlConnection = async function(logger) {
 	});
 	
 	
-	// Try to connect to db
-    try {
-		
-        await sequelizeConnection.authenticate();
-		
-        logger.info('Connected to DB');
-		
-    } catch (error) {
-		
-		// Errors on connection to db are fatal
-        logger.fatal(error.message);
-		
-		throw error;
-		
-    }
+	return sequelizeConnection;
 
 }
 
