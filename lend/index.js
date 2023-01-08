@@ -231,4 +231,4 @@ await db.dbConnection(logger);
 
 
 // Tell express to listen to communication on the specified port after the configuration is done.
-app.listen(PORT, () => console.log(`Lend Service listening on ${PORT}`));
+app.listen(PORT, () => logger.info(`Lends service listening on port ${PORT}`));
