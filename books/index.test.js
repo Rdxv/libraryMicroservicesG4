@@ -75,10 +75,15 @@ it('[POST] - create a new book /api/books', async () => {
 
 it('[PUT] - update a book /api/books/id', async () => {
     const books = await supertest(app).get('/api/books').expect(200);
-    const firstBook = books.body.data[7];
+    const firstBook = books.body.data[0];
+
+    // use this console log to check the book before the update.
+    // This test's final result will be different but both books will have
+    // the same id.
+    console.log(firstBook);
 
     await supertest(app)
-        .get(`/api/books/${firstBook.id}`)
+        .put(`/api/books/${firstBook.id}`)
         .send({
             title: 'Title Changed',
             year: '2022',
@@ -94,6 +99,35 @@ it('[PUT] - update a book /api/books/id', async () => {
             expect(result.success).toBeTruthy();
         });
 });
+
+// TODO: this test FAILS. Find out why it can't recognize the 1st property (in this case, the id)
+/*
+it('[GET] - get all books by year /api/books?year=2022', async () => {
+    await supertest(app)
+        .get('/api/books?year=2022')
+        .expect(200)
+        .then((response) => {
+            const result = response.body;
+            expect(result.success).toBeTruthy();
+            expect(result.data.length).toBeGreaterThan(0);
+            expect(Array.isArray(result.data)).toBeTruthy();
+
+            const book = result.data;
+            expect(book).toHaveProperty('id');
+            expect(book).toHaveProperty('author');
+            expect(book).toHaveProperty('title');
+            expect(book).toHaveProperty('isbn13');
+            expect(book).toHaveProperty('year');
+            expect(book).toHaveProperty('publisher');
+            expect(book).toHaveProperty('genre');
+            expect(book).toHaveProperty('copies');
+
+            expect(new Date(book.year).getUTCFullYear()).toBe(new Date.year('2022').getUTCFullYear());
+
+        });
+});
+*/
+
 
 /*
 it('[GET] - Check the list of books /api/books with success', async () => {
