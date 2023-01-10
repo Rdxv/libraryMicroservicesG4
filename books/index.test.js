@@ -101,7 +101,7 @@ it('[PUT] - update a book /api/books/id', async () => {
 });
 
 // TODO: this test FAILS. Find out why it can't recognize the 1st property (in this case, the id)
-/*
+
 it('[GET] - get all books by year /api/books?year=2022', async () => {
     await supertest(app)
         .get('/api/books?year=2022')
@@ -112,7 +112,7 @@ it('[GET] - get all books by year /api/books?year=2022', async () => {
             expect(result.data.length).toBeGreaterThan(0);
             expect(Array.isArray(result.data)).toBeTruthy();
 
-            const book = result.data;
+            const book = result.data[0];
             expect(book).toHaveProperty('id');
             expect(book).toHaveProperty('author');
             expect(book).toHaveProperty('title');
@@ -122,11 +122,10 @@ it('[GET] - get all books by year /api/books?year=2022', async () => {
             expect(book).toHaveProperty('genre');
             expect(book).toHaveProperty('copies');
 
-            expect(new Date(book.year).getUTCFullYear()).toBe(new Date.year('2022').getUTCFullYear());
-
+            expect(book.year).toBe(2022);
         });
 });
-*/
+
 
 
 /*
