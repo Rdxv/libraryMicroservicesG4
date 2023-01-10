@@ -185,11 +185,8 @@ app.use( (error, req, res, next) => {
 
 
 // Wait for db connection
-await db.dbConnection(
-	error => logger.error(`DB Error: ${error}`),
-	info => logger.info(`DB Info: ${info}`)
-);
+await db.dbConnection(logger);
 
 
 // Tell express to listen to communication on the specified port after the configuration is done
-app.listen(PORT, () => logger.info(`Libreria Alfonso listening on port ${PORT}`));
+app.listen(PORT, () => logger.info(`Books service listening on port ${PORT}`));
