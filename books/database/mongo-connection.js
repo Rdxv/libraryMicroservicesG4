@@ -25,7 +25,9 @@ async function mongoConnection(logger) {
 		};
 		
 	} else { // Use fake DB (in-memory)
-		
+
+		logger.warn('Using fake DB (in-memory)');
+
 		const { MongoMemoryServer } = await import('mongodb-memory-server'); // Dynamically import in-memory mongo lib
 		
 		const mongoServer = await MongoMemoryServer.create(); // Spin up in-memory mongodb
