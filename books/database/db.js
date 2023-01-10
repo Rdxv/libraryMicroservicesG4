@@ -2,24 +2,16 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-// Import connection to mongodb (dynamically depending on NODE_ENV)
-let useRealDB;
-if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'db-test')
-	useRealDB = true;
-else
-	useRealDB = false;
-const { default: mongoConnection } = await import(useRealDB ? './mongo-connection.js' : './fake-mongo-connection.js');
-
 // Import connection to mongodb (with regular ES6 import)
-//import mongoConnection from './mongo-connection.js';
+import mongoConnection from './mongo-connection.js';
 
 // Import book model
 import Book from './models/book.js';
 
 
 // Connect to mongodb
-const dbConnection = async function(errorLogger, infoLogger) {
-	await mongoConnection(errorLogger, infoLogger); // TODO change logging inside mongoConnection
+const dbConnection = async function(logger) {
+	await mongoConnection(logger);
 }
 
 
