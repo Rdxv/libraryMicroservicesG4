@@ -1,3 +1,5 @@
+import uvicorn
+
 from ariadne import QueryType, MutationType, make_executable_schema, load_schema_from_path, format_error
 from ariadne.asgi import GraphQL
 from graphql import GraphQLError
@@ -46,3 +48,9 @@ async def resolve_delete_book(_, info, id):
 ## Initialize app
 schema = make_executable_schema(my_schema, [query, mutation] + custom_scalars)
 app = GraphQL(schema)
+
+
+
+## Run uvicorn internally if executed as a standalone script
+if __name__ == "__main__":
+    uvicorn.run("app:app", host = "127.0.0.1", port = 8000)
