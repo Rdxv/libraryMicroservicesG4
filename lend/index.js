@@ -52,7 +52,7 @@ app.use(
 
 
 app.get('/api/lends', asyncRouteWrapper( async (request, response) => {
-	const pageNumber = request.query.pageNumber ?? 0;
+	const pageNumber = request.query.pageNumber ?? 1;
 	const pageSize = request.query.pageSize ?? 10;
 	
 	const filter = {};
@@ -63,7 +63,10 @@ app.get('/api/lends', asyncRouteWrapper( async (request, response) => {
 	
 	return response.status(200).json({
 		success: true,
-		...results
+		data: results.rows,
+		pageNumber: pageNumber,
+		pageSize: pageSize,
+		totalPages: Math.floor(results.count / pageSize) + 1,
 	});
 }));
 
