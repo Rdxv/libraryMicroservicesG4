@@ -134,11 +134,18 @@ app.put('/api/books/:id', asyncRouteWrapper( async (request, response) => {
 			data: updatedBook,
 		});
 		
-	} else {
+	} else if (updatedBook === undefined){
 		
 		return response.status(404).json({
 			success: false,
 			msg: 'Not found',
+		});
+		
+	} else if (updatedBook === null){
+		
+		return response.status(409).json({
+			success: false,
+			msg: 'Duplicate error',
 		});
 		
 	}
@@ -150,10 +157,21 @@ app.post('/api/books', asyncRouteWrapper( async (request, response) => {
 	
 	const newBook = await db.addBook(bookData);
 	
-	return response.status(201).json({
-		success: true,
-		data: newBook
-	});
+	if (newBook) {
+		
+		return response.status(201).json({
+			success: true,
+			data: newBook
+		});
+		
+	} else {
+		
+		return response.status(409).json({
+			success: false,
+			msg: 'Duplicate error',
+		});
+		
+	}
 }));
 
 
