@@ -90,7 +90,7 @@ it('[PUT] - update a book /api/books/id', async () => {
             isbn13: '999-9-999-99999-9',
             author: 'Author Changed',
             publisher: 'Publisher Changed',
-            genre: 'Changed',
+            genre: 'Genre Changed',
             copies: 8
         })
         .expect(200)
@@ -98,9 +98,16 @@ it('[PUT] - update a book /api/books/id', async () => {
             const result = response.body;
             expect(result.success).toBeTruthy();
         });
-});
 
-// TODO: this test FAILS. Find out why it can't recognize the 1st property (in this case, the id)
+    await supertest(app)
+        .get(`/api/books/${firstBook.id}`)
+        .expect(200)
+        .then((response) => {
+            const result = response.body;
+            expect(result.success).toBeTruthy();
+            expect(result.data.genre).toBe('Genre Changed');
+        });
+});
 
 it('[GET] - get all books by year /api/books?year=2022', async () => {
     await supertest(app)
@@ -126,7 +133,32 @@ it('[GET] - get all books by year /api/books?year=2022', async () => {
         });
 });
 
+it('[DELETE] - delete a book /api/books/id', async () => {
+    const books = await supertest(app).get('/api/books').expect(200);
+    const firstBook = books.body.data[0];
 
+    // use this console log to check the book before the update.
+    // This test's final result will be different but both books will have
+    // the same id.
+    console.log(firstBook);
+
+    await supertest(app)
+        .delete(`/api/books/${firstBook.id}`)
+        .expect(200)
+        .then((response) => {
+            const result = response.body;
+            expect(result.success).toBeTruthy();
+        });
+
+    await supertest(app)
+        .get(`/api/books/${firstBook.id}`)
+        .expect(404)
+        .then((response) => {
+            const result = response.body;
+            expect(result.success).toBeFalsy();
+        });
+
+});
 
 /*
 it('[GET] - Check the list of books /api/books with success', async () => {
