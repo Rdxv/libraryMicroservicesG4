@@ -4,6 +4,8 @@ import LendSchema from './models/lend.js';
 // Import connection to SQL database
 import sqlConnection from './sql-connection.js';
 
+// Change the variable in .env if you want the lend duration not to be 30 days
+const MAX_LEND_DAYS = process.env.MAX_LEND_DAYS ?? 30;
 
 // Connect to SQL database and initialize model
 let Lend; // Empty lend model
