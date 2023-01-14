@@ -50,6 +50,10 @@ const sqlConnection = async function(logger) {
 	
 	// If in production env or in db-test env, set useRealDb to true
 	const useRealDb = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'db-test';
+
+	if (!useRealDb)
+		logger.warn('Using fake DB (in-memory)');
+
 	
 	// Set up sequelite connection
 	const sequelizeConnection = new Sequelize({
