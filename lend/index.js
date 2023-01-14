@@ -235,3 +235,6 @@ await db.dbConnection(logger);
 
 // Tell express to listen to communication on the specified port after the configuration is done.
 app.listen(PORT, () => logger.info(`Lends service listening on port ${PORT}`));
+
+// Exports for tests
+export default app
