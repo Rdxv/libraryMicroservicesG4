@@ -47,6 +47,8 @@ const updateBook = async function(data, id) {
 		if (updatedBook === null) // Book to update was not found
 			return undefined;
 		
+		return updatedBook;
+		
 	} catch (exception) {
 		
 		if (exception.name === 'MongoError' && exception.code === 11000) // DuplicateError
