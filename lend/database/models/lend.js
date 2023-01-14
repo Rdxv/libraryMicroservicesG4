@@ -2,8 +2,7 @@
 import DataTypes from 'sequelize';
 
 // Import uuid (v1)
-import { v1 as uuid_v1 } from 'uuid';
-
+// import { v1 as uuid_v1 } from 'uuid';
 
 // Setup schema
 const LendSchema = {
@@ -17,20 +16,20 @@ const LendSchema = {
 		allowNull: false
 	},
 	userId: {
-		type: DataTypes.UUID,
+		type: DataTypes.INTEGER,
 		allowNull: false
 	},
-	borrowing_date: {
+	borrowingDate: {
 		type: DataTypes.DATEONLY,
-		defaultValue: DataTypes.NOW,
+		//defaultValue: DataTypes.NOW, // default value will be set in db.js
 		allowNull: false
 	},
-	expiration_date: {
+	expirationDate: {
 		type: DataTypes.DATEONLY,
-		//defaultValue: DataTypes.NOW + maxLendTime,
+		//defaultValue: DataTypes.NOW, // default value will be set in db.js
 		allowNull: false
 	},
-	returned_date: {
+	returnedDate: {
 		type: DataTypes.DATEONLY
 	}
 };
