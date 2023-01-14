@@ -1,4 +1,3 @@
-
 // Import lend model
 import LendSchema from './models/lend.js';
 
@@ -37,6 +36,26 @@ const dbConnection = async function(logger) {
 	
 };
 
+// create a getAllLends function with id query parameter
+const getLendsByFilter = async function(filter, pageNumber=1, pageSize=10) {
+
+    const results = await Lend.findAndCountAll({
+        where: {
+            // add to the filters the expiration date
+           /* expirationDate: {
+                [Op.gte]: new Date()
+            },*/
+            ...filter
+
+        },
+        offset: (pageNumber - 1) * pageSize,
+        limit: pageSize
+    });
+    return results;
+
+}
+
+
 
 const getLend = async function(id) {
     const record = await Lend.findByPk(id);
@@ -50,15 +69,39 @@ const getLend = async function(id) {
 
 
 const addLend = async function(data) {
+    data.borrowingDate = new Date(data.borrowingDate ?? Date.now());
+
+    // converts the lend duration to milliseconds and add them to the borrowing date.
+    // ms * 1000 to get seconds, * 60 to get minutes, * 60 to get hours, * 24 to get 1 day
+    data.expirationDate ??= new Date(data.borrowingDate.getTime() + 1000 * 60 * 60 * 24 * MAX_LEND_DAYS);
+
 	const newRecord = await Lend.create(data);
     
     return newRecord;
 }
 
+const updateLend = async function(id, data) {
+    const updatedCount = await Lend.update(data, { where: { id: id } });
+
+    if (updatedCount === 0)  // Record was not found
+        return undefined;
+    return await getLend(id);
+}
+
+const removeLend = async function(id) {
+    const deletedCount = await Lend.destroy({ where: { id: id } });
+
+    if (deletedCount === 1)  // Record was not found
+        return true;
+    return false;
+}
 
 //Exports
 export {
     dbConnection,
+    getLendsByFilter,
 	getLend,
-	addLend
+	addLend,
+    updateLend,
+    removeLend
 }
