@@ -2,6 +2,8 @@ name: Books Service CI Tests
 on:
   push:
     branches: [ feature/services-books ]
+env:
+  LOG_LEVEL: critical
 jobs:
   build:
     runs-on: ${{matrix.os}}
