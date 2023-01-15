@@ -1,0 +1,72 @@
+scalar Date
+scalar Year
+scalar UUIDV1
+
+## Book
+type Book {
+    id: UUIDV1!
+    title: String!
+    year: Year!
+    isbn13: String
+    author: String
+	publisher: String
+	genre: String!
+    copies: Int!
+}
+
+input BookInput {
+    title: String!
+    year: Year!
+    isbn13: String
+    author: String
+	publisher: String
+	genre: String!
+    copies: Int # If not provided, number of copies defaults to zero AKA not available
+}
+
+
+## Customer
+type Customer {
+    id: Int!
+    name: String!
+    surname: String!
+    IntPhone: String
+}
+
+
+## Lend
+type Lend {
+    id: UUIDV1!
+	book: Book!
+	customer: Customer!
+	borrowing_date: Date!
+	expiration_date: Date!
+	returned_date: Date # Null until book is returned
+}
+
+## Queries
+type Query {
+    book (id: UUIDV1!): Book
+    books (
+        pageNumber: Int,
+        pageSize: Int,
+        title: String,
+        year: Year,
+        author: String,
+        publisher: String,
+        genre: String,
+        available: Boolean
+    ): [Book]
+
+    customers: [Customer]
+
+    lends: [Lend]
+}
+
+
+## Mutations
+type Mutation {
+    addBook (input: BookInput!): Book
+    updateBook (id: UUIDV1!, input: BookInput!): Book
+    deleteBook (id: UUIDV1!): Boolean
+}
