@@ -132,9 +132,9 @@ it('[GET] - get Lends with pagination /api/lends?pageNumber=2&pageSize=1', async
             expect(lend).toHaveProperty('expirationDate');
             expect(lend).toHaveProperty('returnedDate');
 
-            expect(result.pageNumber).toBe("2");
-            expect(result.pageSize).toBe("1");
-            expect(result.totalPages).toBe("2");
+            expect(result.pageNumber).toBe(2);
+            expect(result.pageSize).toBe(1);
+            expect(result.totalPages).toBe(2);
         });
 });
 

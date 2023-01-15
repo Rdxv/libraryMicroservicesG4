@@ -63,10 +63,7 @@ app.get('/api/lends', asyncRouteWrapper( async (request, response) => {
 	
 	return response.status(200).json({
 		success: true,
-		data: results.rows,
-		pageNumber: pageNumber,
-		pageSize: pageSize,
-		totalPages: Math.ceil(results.count / pageSize),
+		...results
 	});
 }));
 
