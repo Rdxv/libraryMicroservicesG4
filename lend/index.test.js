@@ -37,7 +37,7 @@ it('[GET] - Check the list of lends /api/lends with success', async () => {
             expect(Array.isArray(result.data)).toBeTruthy();
             expect(result.pageNumber).toBe(1);
             expect(result.pageSize).toBe(10);
-            expect(result.totalPages).toBe(1);
+            expect(result.totalPages).toBe(0); // total pages is 0 if there are no records
         });
     });
 
