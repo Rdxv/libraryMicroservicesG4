@@ -1,10 +1,14 @@
+from environs import Env
+env = Env()
+env.read_env() # read .env file, if it exists
+
 import httpx
 
-import os
+from asgi_correlation_id.context import correlation_id
 
 
 ## Get backend api urls from env
-BOOKS_API_URL = os.environ.get('BOOKS_API_URL') or 'http://localhost:3001/api/books'
+BOOKS_API_URL = env.str('BOOKS_API_URL', 'http://localhost:3001/api/books')
 
 
 ## Start shared httpx async client session
@@ -13,8 +17,9 @@ client = httpx.AsyncClient()
 
 ## Generic method for sending requests to rest apis handling remote and connection errors
 async def send_request_to_api(method, url, params = None, data = None):
+    headers = {'X-Correlation-ID': correlation_id.get()} # Pass correlation_id to backend APIs
     try:
-        resp = await client.request(method, url, params = params, json = data)
+        resp = await client.request(method, url, params = params, json = data, headers = headers)
         if resp.status_code == 200 or resp.status_code == 201:
             return resp.json()
         elif resp.status_code == 404:
