@@ -117,7 +117,7 @@ app.put('/api/lends/:id', asyncRouteWrapper( async (request, response) => {
     const lendData = request.body;
 	const lendId = request.params.id;
 	
-	const updatedLend = await db.updateLend(lendData, lendId);
+	const updatedLend = await db.updateLend(lendId, lendData);
 	
 	if (updatedLend) {
 		
