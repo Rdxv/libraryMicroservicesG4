@@ -6,6 +6,26 @@ A collection of functions simulating a data storage.
 let uuid = require('uuid/v1');
 let lends = [];
 
+const dbConnection = async function() {
+    // Create some mock data
+    lends.push(
+        {
+            id: uuid(),
+            bookId: uuid(),
+            customerId: uuid(),
+            createdAt: "2022-01-01",
+            returnedAt: "",
+        },
+        {
+            id: uuid(),
+            bookId: uuid(),
+            customerId: uuid(),
+            createdAt: "2022-01-01",
+            returnedAt: "2022-02-15",
+        }
+    )
+}
+
 const addLend = lend => {
     const id = uuid();
     // The spread operator (...) is used to create a new object which contains all elements of the received lend object
@@ -31,7 +51,7 @@ const removeLend = id => {
     return lendToRemove;
 }
 
-const returnBook = (lendId, bookId) => {
+const returnLend = (lendId, bookId) => {
     let manipLend = lends.find(lend => lendId === lend.id);
     manipLend.books = manipLend.books.filter(book => {
         if (bookId === book.id) {
@@ -74,7 +94,7 @@ module.exports = {
     addLend,
     updateLend,
     removeLend,
-    returnBook,
+    returnLend,
     getAllLends,
     getLendById,
     getLendByBook,
