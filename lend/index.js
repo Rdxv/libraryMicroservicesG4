@@ -55,11 +55,28 @@ app.get('/api/lends', asyncRouteWrapper( async (request, response) => {
 	const pageNumber = request.query.pageNumber ?? 1;
 	const pageSize = request.query.pageSize ?? 10;
 	
-	const filter = {};
+	const filters = {};
 	
 	// TODO add filters
 	
-	const results = await db.getLendsByFilter(filter, pageNumber, pageSize);
+	if (request.query.bookId)
+		filters.bookId = request.query.bookId;
+	if (request.query.userId)
+		filters.userId = request.query.userId;
+	if (request.query.publisher)
+		filters.publisher = request.query.publisher;
+	if (request.query.borrowingDate)
+		filters.borrowingDate = request.query.borrowingDate;
+	if (request.query.expirationDate)
+		filters.expirationDate = request.query.expirationDate;
+	if (request.query.returnedDate)
+		filters.returnedDate = request.query.returnedDate;
+	if (request.query.returned !== undefined)
+		filters.returned = request.query.returned === 'true';
+	if (request.query.expired !== undefined)
+		filters.expired = request.query.expired === 'true';
+	
+	const results = await db.getLendsByFilter(filters, pageNumber, pageSize);
 	
 	return response.status(200).json({
 		success: true,

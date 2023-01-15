@@ -39,17 +39,20 @@ const dbConnection = async function(logger) {
 };
 
 // create a getAllLends function with id query parameter
-const getLendsByFilter = async function(filter, pageNumber=1, pageSize=10) {
-
+const getLendsByFilter = async function(filters, pageNumber=1, pageSize=10) {
+	
+	const { returned, expired, ...sequelizeFilters } = filters;
+	
+	if (returned !== undefined) // If returned is defined and true get lends with returnedDate not null, if defined and false get those with null returnedDate
+		sequelizeFilters.returnedDate = returned ? { [Op.not]: null } : { [Op.is]: null };
+	
+	if (expired !== undefined) { // If expired is defined and true search lends with expirationDate greater than today, if set to false lends lower or equal to today
+		today = new Date();
+		sequelizeFilters.expirationDate = expired ? { [Op.gt]: today } : { [Op.lte]: today };
+	}
+	
     const results = await Lend.findAndCountAll({
-        where: {
-            // add to the filters the expiration date
-           /* expirationDate: {
-                [Op.gte]: new Date()
-            },*/
-            ...filter
-
-        },
+        where: sequelizeFilters,
         offset: (pageNumber - 1) * pageSize,
         limit: pageSize
     });
