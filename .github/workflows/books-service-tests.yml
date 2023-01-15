@@ -3,7 +3,7 @@ on:
   push:
     branches: [ feature/services-books ]
 env:
-  LOG_LEVEL: critical
+  LOG_LEVEL: error
 jobs:
   build:
     runs-on: ${{matrix.os}}
