@@ -66,7 +66,7 @@ app.get('/api/lends', asyncRouteWrapper( async (request, response) => {
 		data: results.rows,
 		pageNumber: pageNumber,
 		pageSize: pageSize,
-		totalPages: Math.floor(results.count / pageSize) + 1,
+		totalPages: Math.ceil(results.count / pageSize),
 	});
 }));
 
