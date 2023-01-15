@@ -4,7 +4,8 @@
   "description": "express books api",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --forceExit"
   },
   "type": "module",
   "dependencies": {
@@ -17,6 +18,8 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "mongodb-memory-server": "^8.10.2"
+    "jest": "^29.3.1",
+    "mongodb-memory-server": "^8.10.2",
+    "supertest": "^6.3.3"
   }
 }

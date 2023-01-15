@@ -1,0 +1,23 @@
+name: Books Service CI Tests
+on:
+  push:
+    branches: [ feature/services-books ]
+env:
+  LOG_LEVEL: error
+jobs:
+  build:
+    runs-on: ${{matrix.os}}
+    strategy:
+      max-parallel: 3
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3.6.0
+    - name: Install modules (including dev-dependencies)
+      run: npm install --include=dev
+    - name: Run tests
+      run: npm test
+    defaults:
+      run:
+        working-directory: books

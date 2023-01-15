@@ -2,31 +2,33 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-// Import connection to mongodb (dynamically depending on NODE_ENV)
-let useRealDB;
-if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'db-test')
-	useRealDB = true;
-else
-	useRealDB = false;
-const { default: mongoConnection } = await import(useRealDB ? './mongo-connection.js' : './fake-mongo-connection.js');
-
 // Import connection to mongodb (with regular ES6 import)
-//import mongoConnection from './mongo-connection.js';
+import mongoConnection from './mongo-connection.js';
 
 // Import book model
 import Book from './models/book.js';
 
 
 // Connect to mongodb
-const dbConnection = async function(errorLogger, infoLogger) {
-	await mongoConnection(errorLogger, infoLogger); // TODO change logging inside mongoConnection
+const dbConnection = async function(logger) {
+	await mongoConnection(logger);
 }
 
 
 const addBook = async function(data) {
 	const newBook = new Book(data);
-    const result = await newBook.save();
-    return result;
+	
+    try {
+		
+		const result = await newBook.save();
+		return result;
+		
+	} catch (exception) {
+		
+		if (exception.name === 'MongoError' && exception.code === 11000) // DuplicateError
+			return null;
+		
+    }
 }
 
 
@@ -34,17 +36,26 @@ const updateBook = async function(data, id) {
     const bookId = id; // Search book by id
 	const bookData = data;
 	
-	const updatedBook = await Book.findByIdAndUpdate(
-      bookId,
-      bookData,
-      { new: true } // Return updated book instead of old one
-    ).exec();
-	
-    if (updatedBook === null) { // Book to update was not found
-		return undefined;
+	try {
+		
+		const updatedBook = await Book.findByIdAndUpdate(
+			bookId,
+			bookData,
+			{ new: true } // Return updated book instead of old one
+		).exec();
+		
+		if (updatedBook === null) // Book to update was not found
+			return undefined;
+		
+		return updatedBook;
+		
+	} catch (exception) {
+		
+		if (exception.name === 'MongoError' && exception.code === 11000) // DuplicateError
+			return null;
+		
     }
 	
-    return updateBook;
 }
 
 
