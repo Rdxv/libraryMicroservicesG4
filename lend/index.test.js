@@ -26,9 +26,9 @@ beforeAll(async () => {
 
 });
 
-it('[GET] - Check the list of books /api/books with success', async () => {
+it('[GET] - Check the list of lends /api/lends with success', async () => {
     await supertest(app)
-        .get('/api/books')
+        .get('/api/lends')
         .expect(200)
         .then((response) => {
             const result = response.body;
@@ -41,17 +41,12 @@ it('[GET] - Check the list of books /api/books with success', async () => {
         });
     });
 
-it('[POST] - create a new book /api/books', async () => {
+it('[POST] - create a new lend /api/lends', async () => {
     await supertest(app)
-        .post('/api/books/')
+        .post('/api/lends/')
         .send({
-            title: 'Es',
-            year: '2005',
-            isbn13: '978-3-548-26038-3',
-            author: 'Stephen King',
-            publisher: 'Ullstein',
-            genre: 'Horror',
-            copies: 5
+            bookId: "25a759e-9426-11ed-a1eb-0242ac120004",
+            userId: "1"
         })
         .expect(201)
         .then((response) => {
@@ -61,37 +56,43 @@ it('[POST] - create a new book /api/books', async () => {
             //expect(result.data).toHaveLength(8);
             //expect(Array.isArray(result.data)).toBeTruthy();
 
-            const book = result.data;
-            expect(book).toHaveProperty('id');
-            expect(book).toHaveProperty('author');
-            expect(book).toHaveProperty('title');
-            expect(book).toHaveProperty('isbn13');
-            expect(book).toHaveProperty('year');
-            expect(book).toHaveProperty('publisher');
-            expect(book).toHaveProperty('genre');
-            expect(book).toHaveProperty('copies');
+            const lend = result.data;
+            expect(lend).toHaveProperty('id');
+            expect(lend).toHaveProperty('bookId');
+            expect(lend).toHaveProperty('userId');
+            expect(lend).toHaveProperty('borrowingDate');
+            expect(lend).toHaveProperty('expirationDate');
         });
+
+    // Also, create a 2nd lend object, to see if the post works
+    // (the 1st lend object will be edited in the next test)
+    await supertest(app)
+        .post('/api/lends/')
+        .send({
+            bookId: "35a759e-9426-11ed-a1eb-0242ac120004",
+            userId: "2"
+        })
+        .expect(201)
+
 });
 
-it('[PUT] - update a book /api/books/id', async () => {
-    const books = await supertest(app).get('/api/books').expect(200);
-    const firstBook = books.body.data[0];
+it('[PUT] - update a lend /api/lends/id', async () => {
+    const lends = await supertest(app).get('/api/lends').expect(200);
+    const firstLend = lends.body.data[0];
 
-    // use this console log to check the book before the update.
-    // This test's final result will be different but both books will have
+    // use this console log to check the lend before the update.
+    // This test's final result will be different but both lends will have
     // the same id.
-    console.log(firstBook);
+    console.log(firstLend);
 
     await supertest(app)
-        .put(`/api/books/${firstBook.id}`)
+        .put(`/api/lends/${firstLend.id}`)
         .send({
-            title: 'Title Changed',
-            year: '2022',
-            isbn13: '999-9-999-99999-9',
-            author: 'Author Changed',
-            publisher: 'Publisher Changed',
-            genre: 'Genre Changed',
-            copies: 8
+            bookId: "65a759e-9426-11ed-a1eb-0242ac120004",
+            userId: 6,
+            borrowingDate: "2023-01-16",
+            expirationDate: "2023-02-15",
+            returnedDate: "2023-02-15"
         })
         .expect(200)
         .then((response) => {
@@ -100,50 +101,54 @@ it('[PUT] - update a book /api/books/id', async () => {
         });
 
     await supertest(app)
-        .get(`/api/books/${firstBook.id}`)
+        .get(`/api/lends/${firstLend.id}`)
         .expect(200)
         .then((response) => {
             const result = response.body;
             expect(result.success).toBeTruthy();
-            expect(result.data.genre).toBe('Genre Changed');
+            expect(result.data.bookId).toBe('65a759e-9426-11ed-a1eb-0242ac120004');
+            expect(result.data.userId).toBe(6);
+            expect(result.data.borrowingDate).toBe('2023-01-16');
+            expect(result.data.expirationDate).toBe('2023-02-15');
+            expect(result.data.returnedDate).toBe('2023-02-15');
         });
 });
 
-it('[GET] - get all books by year /api/books?year=2022', async () => {
+it('[GET] - get Lends with pagination /api/lends?pageNumber=2&pageSize=1', async () => {
     await supertest(app)
-        .get('/api/books?year=2022')
+        .get('/api/lends?pageNumber=2&pageSize=1')
         .expect(200)
         .then((response) => {
             const result = response.body;
             expect(result.success).toBeTruthy();
-            expect(result.data.length).toBeGreaterThan(0);
+            expect(result.data.length).toBe(1);
             expect(Array.isArray(result.data)).toBeTruthy();
 
-            const book = result.data[0];
-            expect(book).toHaveProperty('id');
-            expect(book).toHaveProperty('author');
-            expect(book).toHaveProperty('title');
-            expect(book).toHaveProperty('isbn13');
-            expect(book).toHaveProperty('year');
-            expect(book).toHaveProperty('publisher');
-            expect(book).toHaveProperty('genre');
-            expect(book).toHaveProperty('copies');
+            const lend = result.data[0];
+            expect(lend).toHaveProperty('id');
+            expect(lend).toHaveProperty('bookId');
+            expect(lend).toHaveProperty('userId');
+            expect(lend).toHaveProperty('borrowingDate');
+            expect(lend).toHaveProperty('expirationDate');
+            expect(lend).toHaveProperty('returnedDate');
 
-            expect(book.year).toBe(2022);
+            expect(result.pageNumber).toBe("2");
+            expect(result.pageSize).toBe("1");
+            expect(result.totalPages).toBe("2");
         });
 });
 
-it('[DELETE] - delete a book /api/books/id', async () => {
-    const books = await supertest(app).get('/api/books').expect(200);
-    const firstBook = books.body.data[0];
+it('[DELETE] - delete a lend /api/lends/id', async () => {
+    const lends = await supertest(app).get('/api/lends').expect(200);
+    const firstLend = lends.body.data[0];
 
-    // use this console log to check the book before the update.
-    // This test's final result will be different but both books will have
+    // use this console log to check the lend before the update.
+    // This test's final result will be different but both lends will have
     // the same id.
-    console.log(firstBook);
+    console.log(firstLend);
 
     await supertest(app)
-        .delete(`/api/books/${firstBook.id}`)
+        .delete(`/api/lends/${firstLend.id}`)
         .expect(200)
         .then((response) => {
             const result = response.body;
@@ -151,7 +156,7 @@ it('[DELETE] - delete a book /api/books/id', async () => {
         });
 
     await supertest(app)
-        .get(`/api/books/${firstBook.id}`)
+        .get(`/api/lends/${firstLend.id}`)
         .expect(404)
         .then((response) => {
             const result = response.body;
