@@ -23,6 +23,7 @@ from ariadne.asgi import GraphQL
 from graphql_logic import executable_schema
 
 
+## Setup logging
 LOG_JSON_FORMAT = env.bool('LOG_JSON_FORMAT', False)
 LOG_LEVEL = env.log_level('LOG_LEVEL', 'INFO')
 
@@ -92,5 +93,8 @@ app.mount("/graphql", GraphQL(executable_schema, debug = (LOG_LEVEL == 'DEBUG'))
 
 
 ## Run uvicorn internally if executed as a standalone script
+PORT = env.int('PORT', 8000)
+BIND_HOST = env.str('BIND_HOST', '0.0.0.0')
+
 if __name__ == '__main__':
-    uvicorn.run(app, host='127.0.0.1', port=8000, log_config=None)
+    uvicorn.run(app, host=BIND_HOST, port=PORT, log_config=None)
