@@ -56,7 +56,12 @@ const getLendsByFilter = async function(filters, pageNumber=1, pageSize=10) {
         offset: (pageNumber - 1) * pageSize,
         limit: pageSize
     });
-    return results;
+    return {
+        data: results.rows,
+        pageNumber: parseInt(pageNumber),
+        pageSize: parseInt(pageSize),
+        totalPages: Math.ceil(results.count / pageSize),
+    };
 
 }
 
