@@ -1,56 +1,96 @@
+from environs import Env
+env = Env()
+env.read_env() # read .env file, if it exists
+
+import time
+from uuid import uuid4
+
 import uvicorn
+from uvicorn.protocols.utils import get_path_with_query_string
 
-from ariadne import QueryType, MutationType, make_executable_schema, load_schema_from_path, format_error
+from starlette.applications import Starlette
+from starlette.responses import Response
+from starlette.middleware import Middleware
+from starlette.middleware.base import BaseHTTPMiddleware
+
+from asgi_correlation_id import CorrelationIdMiddleware
+from asgi_correlation_id.context import correlation_id
+
+import structlog
+from custom_logging import setup_logging
+
 from ariadne.asgi import GraphQL
-from graphql import GraphQLError
-
-import connectors
-
-from custom_scalars import custom_scalars
+from graphql_logic import executable_schema
 
 
-## Define type definitions (schema) using SDL
-my_schema = load_schema_from_path('schema.graphql')
+LOG_JSON_FORMAT = env.bool('LOG_JSON_FORMAT', False)
+LOG_LEVEL = env.log_level('LOG_LEVEL', 'INFO')
+
+setup_logging(json_logs=LOG_JSON_FORMAT, log_level=LOG_LEVEL)
+
+access_logger = structlog.stdlib.get_logger('api.access')
 
 
-## Initialize query type
-query = QueryType()
+class CustomLoggingMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        # Clear context vars
+        structlog.contextvars.clear_contextvars()
+
+        # These context vars will be added to all log entries emitted during the request
+        structlog.contextvars.bind_contextvars(correlation_id=correlation_id.get())
+
+        start_time = time.perf_counter_ns()
+        # If the call_next raises an error, we still want to return our own 500 response,
+        # so we can add headers to it (process time, request ID...)
+        response = Response(status_code=500)
+        try:
+            response = await call_next(request)
+        except Exception:
+            structlog.stdlib.get_logger('api.error').exception('Uncaught exception')
+            raise
+        finally:
+            process_time = time.perf_counter_ns() - start_time
+            status_code = response.status_code
+            url = get_path_with_query_string(request.scope)
+            client_host = request.client.host
+            client_port = request.client.port
+            http_method = request.method
+            http_version = request.scope['http_version']
+            # Recreate the Uvicorn access log format, but add all parameters as structured information
+            access_logger.info(
+                f'''{client_host}:{client_port} - '{http_method} {url} HTTP/{http_version}' {status_code}''',
+                # http={
+                #     'url': str(request.url),
+                #     'status_code': status_code,
+                #     'method': http_method,
+                #     'correlation_id': correlation_id,
+                #     'version': http_version,
+                # },
+                network={'client': {'ip': client_host, 'port': client_port}},
+                duration=process_time,
+            )
+            response.headers['X-Process-Time'] = str(process_time / 10 ** 9)
+            return response
+
+## Configure middlewares
+middlewares_list = [
+    Middleware(
+        CorrelationIdMiddleware,
+        header_name='X-Correlation-ID',
+        generator=lambda: str(uuid4()),
+        transformer=lambda _: str(uuid4())
+    ),
+    Middleware(CustomLoggingMiddleware)
+]
 
 
-## Initialize mutation type
-mutation = MutationType()
+## Configure Starlette app
+app = Starlette(middleware = middlewares_list, debug = (LOG_LEVEL == 'DEBUG'))
 
-
-## Define resolversve
-@query.field('book')
-async def resolve_book(*_, id):
-    return await connectors.get_book_by_id(id)
-
-@query.field('books')
-#async def resolve_books(*_, pageNumber=None, pageSize=None, title=None, year=None, author=None, publisher=None, genre=None, available=None):
-async def resolve_books(*_, **arguments):
-    return await connectors.get_books(arguments)
-
-@mutation.field('addBook')
-async def resolve_add_book(_, info, input):
-    return await connectors.add_book(input)
-
-@mutation.field('updateBook')
-async def resolve_update_book(_, info, id, input):
-    return await connectors.update_book(id, input)
-
-@mutation.field('deleteBook')
-async def resolve_delete_book(_, info, id):
-    return await connectors.delete_book(id)
-
-
-
-## Initialize app
-schema = make_executable_schema(my_schema, [query, mutation] + custom_scalars)
-app = GraphQL(schema)
-
+## Add Ariadne to the Starlette app
+app.mount("/graphql", GraphQL(executable_schema, debug = (LOG_LEVEL == 'DEBUG')))
 
 
 ## Run uvicorn internally if executed as a standalone script
-if __name__ == "__main__":
-    uvicorn.run("app:app", host = "127.0.0.1", port = 8000)
+if __name__ == '__main__':
+    uvicorn.run(app, host='127.0.0.1', port=8000, log_config=None)
