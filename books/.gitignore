@@ -112,7 +112,3 @@ img/Thumbs.db
 target/*
 customers/target/*
 *.class
-
-# IDEs files
-*.xml
-*.iml
