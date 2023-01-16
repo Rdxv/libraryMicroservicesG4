@@ -46,11 +46,7 @@ app.use(
 );
 
 
-// app.get('/', (request, response) => {
-//     response.send('Libreria Alfonso aperta');
-// });
-
-
+// Give all books
 app.get('/api/books', asyncRouteWrapper( async (request, response) => {
 	const pageNumber = request.query.pageNumber ?? 0;
 	const pageSize = request.query.pageSize ?? 10;
@@ -79,6 +75,7 @@ app.get('/api/books', asyncRouteWrapper( async (request, response) => {
 }));
 
 
+//Give books by ID
 app.get('/api/books/:id', asyncRouteWrapper( async (request, response) => {
 	const book = await db.getBook(request.params.id);
 	
@@ -100,6 +97,7 @@ app.get('/api/books/:id', asyncRouteWrapper( async (request, response) => {
 }));
 
 
+//Delete books by ID
 app.delete('/api/books/:id', asyncRouteWrapper( async (request, response) => {
 	const result = await db.removeBook(request.params.id);
 	
@@ -121,6 +119,7 @@ app.delete('/api/books/:id', asyncRouteWrapper( async (request, response) => {
 }));
 
 
+//Modify books by ID
 app.put('/api/books/:id', asyncRouteWrapper( async (request, response) => {
     const bookData = request.body;
 	const bookId = request.params.id;
@@ -151,7 +150,7 @@ app.put('/api/books/:id', asyncRouteWrapper( async (request, response) => {
 	}
 }));
 
-
+//Add books by ID
 app.post('/api/books', asyncRouteWrapper( async (request, response) => {
     const bookData = request.body;
 	
@@ -176,7 +175,7 @@ app.post('/api/books', asyncRouteWrapper( async (request, response) => {
 
 
 
-// Default route for unimplemented paths
+//Default
 app.use(
 	//'/',
 	async (request, response) => {
