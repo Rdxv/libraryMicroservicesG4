@@ -31,7 +31,7 @@ jobs:
       uses: docker/build-push-action@v1.1.0 
       with:
         path: C:\Users\ICTS21-23.255\Desktop\Microservizi\Esame finale\libraryMicroservicesG4\customers
-        dockerfile: labs/02-eCommerce_microservices/customer/Dockerfile
+        dockerfile: C:\Users\ICTS21-23.255\Desktop\Microservizi\Esame finale\libraryMicroservicesG4\customers\Dockerfile
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         repository: ${{ secrets.DOCKER_USERNAME }}/customer
