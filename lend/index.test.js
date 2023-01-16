@@ -46,7 +46,7 @@ it('[POST] - create a new lend /api/lends', async () => {
         .post('/api/lends/')
         .send({
             bookId: "25a759e-9426-11ed-a1eb-0242ac120004",
-            userId: "1"
+            customerId: "1"
         })
         .expect(201)
         .then((response) => {
@@ -59,7 +59,7 @@ it('[POST] - create a new lend /api/lends', async () => {
             const lend = result.data;
             expect(lend).toHaveProperty('id');
             expect(lend).toHaveProperty('bookId');
-            expect(lend).toHaveProperty('userId');
+            expect(lend).toHaveProperty('customerId');
             expect(lend).toHaveProperty('borrowingDate');
             expect(lend).toHaveProperty('expirationDate');
         });
@@ -70,7 +70,7 @@ it('[POST] - create a new lend /api/lends', async () => {
         .post('/api/lends/')
         .send({
             bookId: "35a759e-9426-11ed-a1eb-0242ac120004",
-            userId: "2"
+            customerId: "2"
         })
         .expect(201)
 
@@ -89,7 +89,7 @@ it('[PUT] - update a lend /api/lends/id', async () => {
         .put(`/api/lends/${firstLend.id}`)
         .send({
             bookId: "65a759e-9426-11ed-a1eb-0242ac120004",
-            userId: 6,
+            customerId: 6,
             borrowingDate: "2023-01-16",
             expirationDate: "2023-02-15",
             returnedDate: "2023-02-15"
@@ -107,7 +107,7 @@ it('[PUT] - update a lend /api/lends/id', async () => {
             const result = response.body;
             expect(result.success).toBeTruthy();
             expect(result.data.bookId).toBe('65a759e-9426-11ed-a1eb-0242ac120004');
-            expect(result.data.userId).toBe(6);
+            expect(result.data.customerId).toBe(6);
             expect(result.data.borrowingDate).toBe('2023-01-16');
             expect(result.data.expirationDate).toBe('2023-02-15');
             expect(result.data.returnedDate).toBe('2023-02-15');
@@ -127,7 +127,7 @@ it('[GET] - get Lends with pagination /api/lends?pageNumber=2&pageSize=1', async
             const lend = result.data[0];
             expect(lend).toHaveProperty('id');
             expect(lend).toHaveProperty('bookId');
-            expect(lend).toHaveProperty('userId');
+            expect(lend).toHaveProperty('customerId');
             expect(lend).toHaveProperty('borrowingDate');
             expect(lend).toHaveProperty('expirationDate');
             expect(lend).toHaveProperty('returnedDate');
