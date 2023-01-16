@@ -12,6 +12,7 @@ type Book {
 	publisher: String
 	genre: String!
     copies: Int!
+    lends: [Lend!] # Lends associated with this book
 }
 
 input BookInput {
@@ -30,7 +31,14 @@ type Customer {
     id: Int!
     name: String!
     surname: String!
-    IntPhone: String
+    numberPhone: String
+    lends: [Lend!] # Lends associated with this customer
+}
+
+input CustomerInput {
+    name: String!
+    surname: String!
+    numberPhone: String
 }
 
 
@@ -38,11 +46,23 @@ type Customer {
 type Lend {
     id: UUIDV1!
 	book: Book!
+    bookId: UUIDV1!
 	customer: Customer!
-	borrowing_date: Date!
-	expiration_date: Date!
-	returned_date: Date # Null until book is returned
+    customerId: Int!
+	borrowingDate: Date!
+	expirationDate: Date!
+	returnedDate: Date # Null until book is returned
 }
+
+input LendInput {
+	bookId: UUIDV1!
+	customerId: Int!
+	borrowingDate: Date # If not provided, defaults to today's date
+	expirationDate: Date # # If not provided, defaults to today's date + max allowed borrowing days
+	returnedDate: Date # Null until book is returned
+}
+
+
 
 ## Queries
 type Query {
@@ -56,11 +76,25 @@ type Query {
         publisher: String,
         genre: String,
         available: Boolean
-    ): [Book]
+    ): [Book!]
+    
+    customer (id: Int!): Customer
+    customers (
+        name: String,
+        surname: String,
+        numberPhone: String
+    ): [Customer!]
 
-    customers: [Customer]
-
-    lends: [Lend]
+    lend (id: UUIDV1!): Lend
+    lends (
+        bookId: UUIDV1,
+        customerId: Int,
+        borrowingDate: Date,
+        expirationDate: Date,
+        returnedDate: Date,
+        expired: Boolean,
+        returned: Boolean
+    ): [Lend!]
 }
 
 
@@ -69,4 +103,12 @@ type Mutation {
     addBook (input: BookInput!): Book
     updateBook (id: UUIDV1!, input: BookInput!): Book
     deleteBook (id: UUIDV1!): Boolean
+
+    addLend (input: LendInput!): Lend
+    updateLend (id: UUIDV1!, input: LendInput!): Lend
+    deleteLend (id: UUIDV1!): Boolean
+
+    addCustomer (input: CustomerInput!): Customer
+    updateCustomer (id: Int!, input: CustomerInput!): Customer
+    deleteCustomer (id: Int!): Boolean
 }

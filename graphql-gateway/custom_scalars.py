@@ -9,7 +9,10 @@ date_scalar = ScalarType('Date')
 
 @date_scalar.serializer
 def serialize_date(value):
-    return value.isoformat()
+    try:
+        return value.isoformat()
+    except:
+        return str(value)
 
 @date_scalar.value_parser
 def parse_date(value):
@@ -50,7 +53,7 @@ def parse_uuidv1(value):
     try:
         myuuid = UUID(str(value))
         if myuuid.version == 1:
-            return myuuid
+            return str(myuuid)
     except (ValueError, TypeError):
         pass
     raise ValueError(f'"{value}" is not a valid UUIDV1')
