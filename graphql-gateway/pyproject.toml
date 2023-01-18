@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "graphql-gateway"
+version = "0.9.0"
+description = ""
+authors = ["Daniele Quasimodo"]
+packages = [{include = "graphql_gateway"}]
+
+
+[tool.poetry.dependencies]
+python = "^3.11"
+ariadne = "^0.17.1"
+starlette = "^0.23.1"
+uvicorn = "^0.20.0"
+httpx = "^0.23.3"
+environs = "^9.5.0"
+asgi-correlation-id = "^3.2.1"
+structlog = "^22.3.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
