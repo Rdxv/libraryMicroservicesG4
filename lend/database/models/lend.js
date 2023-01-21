@@ -15,7 +15,7 @@ const LendSchema = {
 		type: DataTypes.UUID,
 		allowNull: false
 	},
-	userId: {
+	customerId: {
 		type: DataTypes.INTEGER,
 		allowNull: false
 	},

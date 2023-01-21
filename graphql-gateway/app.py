@@ -24,7 +24,7 @@ from graphql_logic import executable_schema
 
 
 ## Setup logging
-LOG_JSON_FORMAT = env.bool('LOG_JSON_FORMAT', False)
+LOG_JSON_FORMAT = env.bool('LOG_JSON_FORMAT', True)
 LOG_LEVEL = env.log_level('LOG_LEVEL', 'INFO')
 
 setup_logging(json_logs=LOG_JSON_FORMAT, log_level=LOG_LEVEL)

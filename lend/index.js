@@ -61,8 +61,8 @@ app.get('/api/lends', asyncRouteWrapper( async (request, response) => {
 	
 	if (request.query.bookId)
 		filters.bookId = request.query.bookId;
-	if (request.query.userId)
-		filters.userId = request.query.userId;
+	if (request.query.customerId)
+		filters.customerId = request.query.customerId;
 	if (request.query.publisher)
 		filters.publisher = request.query.publisher;
 	if (request.query.borrowingDate)
