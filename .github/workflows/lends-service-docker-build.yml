@@ -7,7 +7,7 @@ on:
 jobs:
   push_to_registry:
     # If pull request was merged and was from services-lends
-    if: (github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'feature/services-lends')
+    if: (github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'feature/services-lend')
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
     steps:
