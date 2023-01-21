@@ -21,13 +21,19 @@ RUN npm ci --only=production # For PROD
 COPY . .
 
 
-## Open inbound port for microservice (or user --expose with docker run)
-EXPOSE 3001
+## Set docker arguments with defaults
+ARG service_port=3001
 
 
-## Set environment variables (overriding .env if exists). Only options "production" for PROD or "db-test" for testing app with external/real db 
+## Set environment variables
 #ENV NODE_ENV=db-test
 ENV NODE_ENV=production
+
+ENV PORT=${service_port}
+
+
+## Open port to other microservices on same network (or use --expose with docker run)
+EXPOSE ${service_port}
 
 
 ## Start the app
