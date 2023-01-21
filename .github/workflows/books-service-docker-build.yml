@@ -28,5 +28,5 @@ jobs:
         with:
           context: ./books
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ vars.DOCKER_HUB_USERNAME }}/books-service:latest
           labels: ${{ steps.meta.outputs.labels }}
