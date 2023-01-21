@@ -5,7 +5,7 @@ const app = express()
 const sequelize = require('sequelize')
 app.use(express.json)
 
-const dbsAreRunning = () =>{
+const dbsAreRunning = async() =>{
 const db = new sequelize(process.env.POSTGRES_URL)
 const User = db.define('user', {
     name: sequelize.STRING,
@@ -15,8 +15,8 @@ const User = db.define('user', {
 
 const client = new kafka.KafkaClient({kafkaHost: process.env.KKAFKA_BOOTSTRAP_SERVERS})
 const producer = new kafka.Producer(client)
-producer.on('ready', ()=> {
-    app.post('/',(req,res)=>{
+producer.on('ready', async()=> {
+    app.post('/',async(req,res)=>{
         producer.send([{topic: process.env.KAFKA_TOPIC,
             messages: JSON.stringify(req.body)}],
             (err, data)=> {
