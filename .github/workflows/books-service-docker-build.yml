@@ -6,7 +6,8 @@ on:
 
 jobs:
   push_to_registry:
-    if: github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'feature/service-books' # If pull request was merged and was from service-books
+    # If pull request was merged and was from service-books
+    if: (github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'feature/service-books')
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
     steps:
