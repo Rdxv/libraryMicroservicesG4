@@ -1,0 +1,87 @@
+version: "3.9"
+
+networks:
+  backend:
+
+services:
+  
+  ## MongoDB container
+  mongo-db:
+    image: mongo:latest
+    container_name: mongo-db
+    restart: unless-stopped
+    networks:
+      - backend
+    restart: unless-stopped
+    #volumes:
+    #  - mongodb_data:/data/db
+  
+  
+  mysql-db:
+    image: mysql:latest
+    container_name: mysql-db
+    restart: unless-stopped
+    networks:
+      - backend
+    environment:
+      MYSQL_DATABASE: "lends-db"
+      MYSQL_USER: "mysql-user"
+      MYSQL_PASSWORD: "mysql-password"
+      # Password for root access
+      MYSQL_ROOT_PASSWORD: "mysql-root-password"
+    expose:
+      - "3306"
+    #volumes:
+    #  - my-db:/var/lib/mysql
+  
+  
+  ## Books Microservice
+  books-ms:
+    image: icts2123/books-service:latest
+    container_name: books-ms
+    networks:
+      - backend
+    ports:
+      - "3001:3001"
+    expose:
+      - 3001
+    environment:
+      - MONGO_URI=mongodb://mongo-db:27017/books-db
+    depends_on:
+      - mongo-db
+  
+  
+  ## Lends Microservice
+  lends-ms:
+    image: icts2123/lends-service:latest
+    container_name: lends-ms
+    networks:
+      - backend
+    ports:
+      - "3002:3002"
+    expose:
+      - 3002
+    environment:
+      - MONGO_URI=mongodb://mongo-db:27017/books-db
+      - SQL_HOST="mysql-db"
+      - SQL_USER="mysql-user"
+      - SQL_PASSWORD="mysql-password"
+      - SQL_DBNAME="lends-db"
+    depends_on:
+      - mysql-db
+  
+  
+  ## Customers Microservice
+  customers-ms:
+    image: icts2123/customers-service:latest
+    container_name: customers-ms
+    networks:
+      - backend
+    ports:
+      - "3003:3003"
+    expose:
+      - 3003
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongo-db:27017/customer-db
+    depends_on:
+      - mongo-db
