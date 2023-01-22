@@ -9,8 +9,8 @@ from asgi_correlation_id.context import correlation_id
 
 ## Get backend api urls from env
 BOOKS_API_URL = env.str('BOOKS_API_URL', 'http://localhost:3001/api/books')
-LENDS_API_URL = env.str('BOOKS_API_URL', 'http://localhost:3002/api/lends')
-CUSTOMERS_API_URL = env.str('BOOKS_API_URL', 'http://localhost:3003/api/customers')
+LENDS_API_URL = env.str('LENDS_API_URL', 'http://localhost:3002/api/lends')
+CUSTOMERS_API_URL = env.str('CUSTOMERS_API_URL', 'http://localhost:3003/api/customers')
 
 
 ## Start shared httpx async client session
@@ -110,6 +110,7 @@ async def get_customer_by_id(id):
 async def get_customers(query_params = None):
     payload = await send_request_to_api('GET', CUSTOMERS_API_URL, params = query_params)
     if payload is not None:
+        print("TEST:", payload)
         return payload
     return None
 
