@@ -9,8 +9,8 @@ public class Customer {
 	
 	// Properties
 
-	@Id
-	private String id;
+	@Id   
+    protected String id;
 
 	private String name;
 
@@ -34,15 +34,20 @@ public class Customer {
     
 	// Methods
 	
-	public String getId() {
-		
-		return id;
-	}
-	
 	public void setId(String id) {
-		
-		this.id = id;
-	}
+
+        if (this.id != null) {
+            throw new UnsupportedOperationException("ID is already defined");
+        }
+
+        this.id = id;
+    }
+
+	public String getId() {
+
+        return id;
+
+    }
 	
 	public String getName() {
 		
