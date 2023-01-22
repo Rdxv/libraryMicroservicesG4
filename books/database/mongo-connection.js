@@ -12,12 +12,14 @@ async function mongoConnection(logger) {
 	
 	if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'db-test') { // Use real DB
 	
-		const username = encodeURIComponent(process.env.MONGO_USER);
-		const password = encodeURIComponent(process.env.MONGO_PASSWORD);
-		const mongoCluster = process.env.MONGO_CLUSTER;
-		const mongoDatabase = process.env.MONGO_DB;
+		// const username = encodeURIComponent(process.env.MONGO_USER);
+		// const password = encodeURIComponent(process.env.MONGO_PASSWORD);
+		// const mongoCluster = process.env.MONGO_CLUSTER;
+		// const mongoDatabase = process.env.MONGO_DB;
 		
-		mongoUri = `mongodb+srv://${username}:${password}@${mongoCluster}/${mongoDatabase}?retryWrites=true&w=majority`;
+		// mongoUri = `mongodb+srv://${username}:${password}@${mongoCluster}/${mongoDatabase}?retryWrites=true&w=majority`;
+		
+		mongoUri = process.env.MONGO_URI;
 		
 		mongoOptions = {
 			useNewUrlParser: true,
