@@ -29,8 +29,8 @@ services:
       MYSQL_PASSWORD: "mysql-password"
       # Password for root access
       MYSQL_ROOT_PASSWORD: "mysql-root-password"
-    ports:
-      - "3306:3306"
+    # ports:
+    #   - "3306:3306"
     expose:
       - "3306"
     #volumes:
@@ -41,6 +41,7 @@ services:
   books-ms:
     image: icts2123/books-service:latest
     container_name: books-ms
+    restart: unless-stopped
     networks:
       - backend
     ports:
@@ -57,6 +58,7 @@ services:
   lends-ms:
     image: icts2123/lends-service:latest
     container_name: lends-ms
+    restart: unless-stopped
     networks:
       - backend
     ports:
@@ -77,6 +79,7 @@ services:
   customers-ms:
     image: icts2123/customers-service:latest
     container_name: customers-ms
+    restart: unless-stopped
     networks:
       - backend
     ports:
@@ -87,3 +90,24 @@ services:
       SPRING_DATA_MONGODB_URI: "mongodb://mongo-db:27017/customer-db"
     depends_on:
       - mongo-db
+  
+  
+  ## Graphql-gateway Microservice
+  graphql-gateway-ms:
+    image: icts2123/graphql-service:latest
+    container_name: graphql-gateway-ms
+    restart: unless-stopped
+    networks:
+      - backend
+    ports:
+      - "8000:8000"
+    expose:
+      - 8000
+    environment:
+      BOOKS_API_URL: "http://books-ms:3001/api/books"
+      LENDS_API_URL: "http://lends-ms:3002/api/lends"
+      CUSTOMERS_API_URL: "http://customers-ms:3003/api/customers"
+    depends_on:
+      - books-ms
+      - lends-ms
+      - customers-ms
