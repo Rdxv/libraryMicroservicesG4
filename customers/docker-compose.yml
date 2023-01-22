@@ -1,0 +1,24 @@
+version: "3"
+
+networks:
+  back-tier:
+
+services:
+
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    networks:
+      - back-tier
+    restart: unless-stopped
+    
+  backend:
+    build: .
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/customer-db
+    networks:
+      - back-tier
+    ports:
+      - "3003:3003"
+    depends_on:
+      - mongodb
