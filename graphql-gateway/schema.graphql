@@ -31,14 +31,14 @@ type Customer {
     id: UUIDV1!
     name: String!
     surname: String!
-    numberPhone: String
+    phoneNumber: String
     lends: [Lend!] # Lends associated with this customer
 }
 
 input CustomerInput {
     name: String!
     surname: String!
-    numberPhone: String
+    phoneNumber: String
 }
 
 
@@ -82,7 +82,7 @@ type Query {
     customers (
         name: String,
         surname: String,
-        numberPhone: String
+        phoneNumber: String
     ): [Customer!]
 
     lend (id: UUIDV1!): Lend

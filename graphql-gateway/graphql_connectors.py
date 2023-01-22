@@ -104,25 +104,25 @@ async def delete_lend(id):
 async def get_customer_by_id(id):
     payload = await send_request_to_api('GET', CUSTOMERS_API_URL + '/' + str(id))
     if payload is not None:
-        return payload['data'] # The customer is in response.data
+        return payload
     return None
 
 async def get_customers(query_params = None):
     payload = await send_request_to_api('GET', CUSTOMERS_API_URL, params = query_params)
     if payload is not None:
-        return payload['data'] # The customers array is in response.data
+        return payload
     return None
 
 async def add_customer(data):
     payload = await send_request_to_api('POST', CUSTOMERS_API_URL, data = data)
     if payload is not None:
-        return payload['data']
+        return payload
     return None
 
 async def update_customer(id, data):
     payload = await send_request_to_api('PUT', CUSTOMERS_API_URL + '/' + str(id), data = data)
     if payload is not None:
-        return payload['data']
+        return payload
     return None
 
 async def delete_customer(id):
