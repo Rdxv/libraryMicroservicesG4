@@ -28,7 +28,7 @@ input BookInput {
 
 ## Customer
 type Customer {
-    id: Int!
+    id: UUIDV1!
     name: String!
     surname: String!
     numberPhone: String
@@ -48,7 +48,7 @@ type Lend {
 	book: Book!
     bookId: UUIDV1!
 	customer: Customer!
-    customerId: Int!
+    customerId: UUIDV1!
 	borrowingDate: Date!
 	expirationDate: Date!
 	returnedDate: Date # Null until book is returned
@@ -56,7 +56,7 @@ type Lend {
 
 input LendInput {
 	bookId: UUIDV1!
-	customerId: Int!
+	customerId: UUIDV1!
 	borrowingDate: Date # If not provided, defaults to today's date
 	expirationDate: Date # # If not provided, defaults to today's date + max allowed borrowing days
 	returnedDate: Date # Null until book is returned
@@ -78,7 +78,7 @@ type Query {
         available: Boolean
     ): [Book!]
     
-    customer (id: Int!): Customer
+    customer (id: UUIDV1!): Customer
     customers (
         name: String,
         surname: String,
@@ -87,8 +87,10 @@ type Query {
 
     lend (id: UUIDV1!): Lend
     lends (
+        pageNumber: Int,
+        pageSize: Int,
         bookId: UUIDV1,
-        customerId: Int,
+        customerId: UUIDV1,
         borrowingDate: Date,
         expirationDate: Date,
         returnedDate: Date,
@@ -109,6 +111,6 @@ type Mutation {
     deleteLend (id: UUIDV1!): Boolean
 
     addCustomer (input: CustomerInput!): Customer
-    updateCustomer (id: Int!, input: CustomerInput!): Customer
-    deleteCustomer (id: Int!): Boolean
+    updateCustomer (id: UUIDV1!, input: CustomerInput!): Customer
+    deleteCustomer (id: UUIDV1!): Boolean
 }
