@@ -7,8 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.stella.library.entities.Customer;
-import com.stella.library.repos.CustomerRepos;
+import com.stella.library.model.Customer;
+import com.stella.library.repository.CustomerRepository;
 
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
@@ -22,26 +22,26 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class CustomerRepositoryUnitTest {
 	
 	@Autowired
-    private CustomerRepos customerRepos;
+    private CustomerRepository CustomerRepo;
 	
 	@Test
     public void testEmptyDB(){
 		
-        assertEquals(0,customerRepos.findAll().size());
+        assertEquals(0,CustomerRepo.findAll().size());
     }
 	
 	@Test
     public void testAddOneCustomer(){
 		
-        Customer customer = new Customer();
+        Customer customer = new Customer("Simone", "Stella", "0123456678");
         
-        customer.setName("Simone");
-        customer.setSurname("Stella");
-        customer.setId(1);
-        customer.setNumberPhone("0123456678");
+        //customer.setName("Simone");
+        //customer.setSurname("Stella");
+        //customer.setId(1);
+        //customer.setphoneNumber("0123456678");
         
-        customerRepos.save(customer);
+        CustomerRepo.save(customer);
         
-        assertEquals(1,customerRepos.findAll().size()  );
+        assertEquals(1,CustomerRepo.findAll().size()  );
     }
 }
