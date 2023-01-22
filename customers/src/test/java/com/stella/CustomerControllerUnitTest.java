@@ -1,8 +1,9 @@
 package com.stella;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.stella.library.integration.CustomerRest;
-import com.stella.library.repos.CustomerRepos;
+import com.stella.library.controller.CustomerController;
+import com.stella.library.repository.CustomerRepository;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(CustomerRest.class)
+@WebMvcTest(CustomerController.class)
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 
@@ -28,7 +29,7 @@ public class CustomerControllerUnitTest {
 	private MockMvc mockMvc;
 	
 	@MockBean
-	CustomerRepos repos;
+	CustomerRepository repos;
 	
 	@Test
 	public void testGetAllCustomers() {
