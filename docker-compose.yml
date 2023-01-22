@@ -29,6 +29,8 @@ services:
       MYSQL_PASSWORD: "mysql-password"
       # Password for root access
       MYSQL_ROOT_PASSWORD: "mysql-root-password"
+    ports:
+      - "3306:3306"
     expose:
       - "3306"
     #volumes:
@@ -46,7 +48,7 @@ services:
     expose:
       - 3001
     environment:
-      - MONGO_URI=mongodb://mongo-db:27017/books-db
+      MONGO_URI: "mongodb://mongo-db:27017/books-db"
     depends_on:
       - mongo-db
   
@@ -62,11 +64,11 @@ services:
     expose:
       - 3002
     environment:
-      - MONGO_URI=mongodb://mongo-db:27017/books-db
-      - SQL_HOST="mysql-db"
-      - SQL_USER="mysql-user"
-      - SQL_PASSWORD="mysql-password"
-      - SQL_DBNAME="lends-db"
+      MONGO_URI: "mongodb://mongo-db:27017/books-db"
+      SQL_HOST: "mysql-db"
+      SQL_USER: "mysql-user"
+      SQL_PASSWORD: "mysql-password"
+      SQL_DBNAME: "lends-db"
     depends_on:
       - mysql-db
   
@@ -82,6 +84,6 @@ services:
     expose:
       - 3003
     environment:
-      - SPRING_DATA_MONGODB_URI=mongodb://mongo-db:27017/customer-db
+      SPRING_DATA_MONGODB_URI: "mongodb://mongo-db:27017/customer-db"
     depends_on:
       - mongo-db
