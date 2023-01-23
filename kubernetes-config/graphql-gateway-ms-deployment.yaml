@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: C:\Program Files\Kubernetes\Minikube\kompose.exe convert -f ..\docker-compose.yml
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: graphql-gateway-ms
+  name: graphql-gateway-ms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: graphql-gateway-ms
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: C:\Program Files\Kubernetes\Minikube\kompose.exe convert -f ..\docker-compose.yml
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/backend: "true"
+        io.kompose.service: graphql-gateway-ms
+    spec:
+      containers:
+        - env:
+            - name: BOOKS_API_URL
+              value: http://books-ms:3001/api/books
+            - name: CUSTOMERS_API_URL
+              value: http://customers-ms:3003/api/customers
+            - name: LENDS_API_URL
+              value: http://lends-ms:3002/api/lends
+          image: icts2123/graphql-service:latest
+          name: graphql-gateway-ms
+          ports:
+            - containerPort: 8000
+          resources: {}
+      restartPolicy: Always
+status: {}
