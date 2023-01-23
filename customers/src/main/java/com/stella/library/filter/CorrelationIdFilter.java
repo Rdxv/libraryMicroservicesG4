@@ -14,7 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class CorrelationIdFilter extends HttpFilter {
 
-    static final String CORRELATION_ID_HEADER_NAME = "X-Correlation-Id";
+    static final String CORRELATION_ID_HEADER_NAME = "X-Correlation-ID";
 
     private String getCorrelationIdFromHeader(HttpServletRequest req) {
         return req.getHeader(CORRELATION_ID_HEADER_NAME);
