@@ -9,11 +9,9 @@ metadata:
     io.kompose.service: customers-ms
   name: customers-ms
 spec:
+  type: NodePort
   ports:
     - name: "3003"
-      port: 3003
-      targetPort: 3003
-    - name: 3003-tcp
       port: 3003
       targetPort: 3003
   selector:

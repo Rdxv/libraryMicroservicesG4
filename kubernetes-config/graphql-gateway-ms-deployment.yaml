@@ -28,10 +28,10 @@ spec:
         - env:
             - name: BOOKS_API_URL
               value: http://books-ms:3001/api/books
-            - name: CUSTOMERS_API_URL
-              value: http://customers-ms:3003/api/customers
             - name: LENDS_API_URL
               value: http://lends-ms:3002/api/lends
+            - name: CUSTOMERS_API_URL
+              value: http://customers-ms:3003/api/customers
           image: icts2123/graphql-service:latest
           name: graphql-gateway-ms
           ports:
