@@ -12,7 +12,8 @@ services:
     restart: unless-stopped
     networks:
       - backend
-    restart: unless-stopped
+    expose:
+      - 27017
     #volumes:
     #  - mongodb_data:/data/db
   
@@ -32,7 +33,7 @@ services:
     # ports:
     #   - "3306:3306"
     expose:
-      - "3306"
+      - 3306
     #volumes:
     #  - my-db:/var/lib/mysql
   
