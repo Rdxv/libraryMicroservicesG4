@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: C:\Program Files\Kubernetes\Minikube\kompose.exe convert -f ..\docker-compose.yml
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: customers-ms
+  name: customers-ms
+spec:
+  ports:
+    - name: "3003"
+      port: 3003
+      targetPort: 3003
+    - name: 3003-tcp
+      port: 3003
+      targetPort: 3003
+  selector:
+    io.kompose.service: customers-ms
+status:
+  loadBalancer: {}
