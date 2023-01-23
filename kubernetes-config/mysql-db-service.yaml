@@ -9,6 +9,7 @@ metadata:
     io.kompose.service: mysql-db
   name: mysql-db
 spec:
+  type: NodePort
   ports:
     - name: "3306"
       port: 3306

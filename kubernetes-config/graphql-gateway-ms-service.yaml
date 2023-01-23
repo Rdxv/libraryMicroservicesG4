@@ -9,11 +9,9 @@ metadata:
     io.kompose.service: graphql-gateway-ms
   name: graphql-gateway-ms
 spec:
+  type: LoadBalancer
   ports:
     - name: "8000"
-      port: 8000
-      targetPort: 8000
-    - name: 8000-tcp
       port: 8000
       targetPort: 8000
   selector:
